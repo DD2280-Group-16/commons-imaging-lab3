@@ -212,6 +212,15 @@
             </rulesets>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.openclover</groupId>
+          <artifactId>clover-maven-plugin</artifactId>
+          <version>4.4.1</version>
+          <configuration>
+            <generateHtml>true</generateHtml>
+            <generateXml>true</generateXml>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -242,6 +251,11 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.20.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.openclover</groupId>
+      <artifactId>clover-maven-plugin</artifactId>
+      <version>4.5.2</version>
+    </dependency>
   </dependencies>
   <reporting>
     <plugins>
@@ -255,6 +269,8 @@
           </reportSet>
         </reportSets>
       </plugin>
+      
+
       <!-- Requires setting 'export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=128m" ' -->
       <plugin>
         <groupId>com.github.spotbugs</groupId>

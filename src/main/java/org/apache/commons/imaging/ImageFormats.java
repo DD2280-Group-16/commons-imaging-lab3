@@ -92,6 +92,8 @@ public enum ImageFormats implements ImageFormat {
     /** XPM (X11 Pixmap) image format. */
     XPM("xpm");
 
+
+
     private final String[] extensions;
 
     ImageFormats(final String... extensions) {
