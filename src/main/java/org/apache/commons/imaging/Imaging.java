@@ -717,7 +717,9 @@ public final class Imaging {
      *  Before adding tests:
      *  Own tool %: 55.55555555555556
      *  ---------------------------------------------------------------------
-     *  After:
+     *  After Tests:
+        Own tool %: 61.904761904761905
+        OpenClover: 82.3%
      *  
      * @param byteSource a valid ByteSource object potentially supplying data for an image.
      * @return An ImageFormat, such as ImageFormat.IMAGE_FORMAT_JPEG. Returns ImageFormat.IMAGE_FORMAT_UNKNOWN if the image type cannot be determined.
@@ -957,7 +959,7 @@ public final class Imaging {
             /*
                 Branch id: 40
             */
-            } else {
+            } else { // 77
                 coverage[40] = true;
                 /*
                     Branch id: 41
@@ -1057,14 +1059,14 @@ public final class Imaging {
                     /*
                         Branch id: 55
                     */
-                    else {
+                    else { // 66
                         coverage[55] = true;
                     }
                 }
                 /*
                     Branch id: 56
                 */
-                else {
+                else { // 88
                     coverage[56] = true;
                 }
             }  
