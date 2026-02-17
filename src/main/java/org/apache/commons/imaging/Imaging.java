@@ -1136,8 +1136,8 @@ public final class Imaging {
      *  Helper function 3: checkComplexFormats compares the first 4 bytes and first 12 bytes against the formats JBIG2 and RIFFWEBP
      *  Helper function 4: guessByExtension looks at the extension of the input file and try to determine the format as a last resort.
      * 
-     *  This refactoring changed guessFormat from a CC of 33 to a CC of 8 which is an decrease of:
-     *  33 - 8 = 25. 25 / 33 = 0.7576 which is about 75.8%
+     *  This refactoring changed guessFormat from a CC of 33(originally) to a CC of 6 which is an decrease of:
+     *  33 - 6 = 29. 29 / 33 = 0.82857 which is about 82.8%
      * @param byteSource
      * @return
      * @throws IOException
