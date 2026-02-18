@@ -16,6 +16,8 @@
  */
 package org.apache.commons.imaging.formats.bmp;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -31,6 +33,17 @@ import org.junit.jupiter.api.Test;
  * Tests for the {@link BmpImageParser}.
  */
 class BmpImageParserTest {
+    @BeforeEach
+    void setUp() {
+        // Ensures each test starts with a clean slate
+        CoverageTracker.reset();
+    }
+
+    @AfterAll
+    static void tearDownAll() {
+        // Triggers the report after all existing tests in this class finish
+        CoverageTracker.printCoverage();
+    }
 
     /**
      * For https://issues.apache.org/jira/browse/IMAGING-279.
