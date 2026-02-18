@@ -719,7 +719,7 @@ public class TiffImageMetadata extends GenericImageMetadata {
         return tag.getValue(field);
     }
 
-    private boolean[] coverage = new boolean[10]; // Coverage tracker
+    private boolean[] coverage = new boolean[16]; // Coverage tracker
 
 
     /**
@@ -751,20 +751,35 @@ public class TiffImageMetadata extends GenericImageMetadata {
             this.coverage[2] = true;
             return null;
         }
-        if (latitudeField == null){
+        else {
             this.coverage[3] = true;
-            return null;
         }
-        if (longitudeRefField == null){
+
+        if (latitudeField == null){
             this.coverage[4] = true;
             return null;
         }
-        if (longitudeField == null){
+        else {
             this.coverage[5] = true;
-            return null;
         }
 
-        coverage[6] = true;
+        if (longitudeRefField == null){
+            this.coverage[6] = true;
+            return null;
+        }
+        else {
+            this.coverage[7] = true;
+        }
+
+        if (longitudeField == null){
+            this.coverage[8] = true;
+            return null;
+        }
+        else {
+            this.coverage[9] = true;
+        }
+
+        coverage[10] = true;
         
         // all of these values are strings.
         final String latitudeRef = latitudeRefField.getStringValue();
@@ -773,15 +788,22 @@ public class TiffImageMetadata extends GenericImageMetadata {
         final RationalNumber[] longitude = (RationalNumber[]) longitudeField.getValue();
 
         if (latitude.length != 3) {
-            this.coverage[7] = true;
+            this.coverage[11] = true;
             throw new ImagingException("Expected three values for latitude and longitude.");
         }
-        if (longitude.length != 3) {
-            this.coverage[8] = true;
-            throw new ImagingException("Expected three values for latitude and longitude.");
+        else {
+            this.coverage[12] = true;
         }
 
-        this.coverage[9] = true;
+        if (longitude.length != 3) {
+            this.coverage[13] = true;
+            throw new ImagingException("Expected three values for latitude and longitude.");
+        }
+        else {
+            this.coverage[14] = true;
+        }
+
+        this.coverage[15] = true;
 
         final RationalNumber latitudeDegrees = latitude[0];
         final RationalNumber latitudeMinutes = latitude[1];
