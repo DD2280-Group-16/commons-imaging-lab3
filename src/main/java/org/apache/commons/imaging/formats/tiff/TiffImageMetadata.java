@@ -719,7 +719,7 @@ public class TiffImageMetadata extends GenericImageMetadata {
         return tag.getValue(field);
     }
 
-    public static boolean[] coverage = new boolean[10]; // Coverage tracker
+    private boolean[] coverage = new boolean[10]; // Coverage tracker
 
 
     /**
@@ -729,12 +729,13 @@ public class TiffImageMetadata extends GenericImageMetadata {
      * @throws ImagingException if an error occurs.
      */
     public GpsInfo getGpsInfo() throws ImagingException {
+        // System.out.println("FUNCTION IS USED"); // SEEING WHICH FUNCTIONS USE GETGPSINFO FUNCTION
         final TiffDirectory gpsDirectory = findDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_GPS);
         if (null == gpsDirectory) {
-            coverage[0] = true;
+            this.coverage[0] = true;
             return null;
         }
-            coverage[1] = true;
+            this.coverage[1] = true;
 
         // more specific example of how to access GPS values.
         final TiffField latitudeRefField = gpsDirectory.findField(GpsTagConstants.GPS_TAG_GPS_LATITUDE_REF);
@@ -747,19 +748,19 @@ public class TiffImageMetadata extends GenericImageMetadata {
         // }
 
         if (latitudeRefField == null){
-            coverage[2] = true;
+            this.coverage[2] = true;
             return null;
         }
         if (latitudeField == null){
-            coverage[3] = true;
+            this.coverage[3] = true;
             return null;
         }
         if (longitudeRefField == null){
-            coverage[4] = true;
+            this.coverage[4] = true;
             return null;
         }
         if (longitudeField == null){
-            coverage[5] = true;
+            this.coverage[5] = true;
             return null;
         }
 
@@ -772,15 +773,15 @@ public class TiffImageMetadata extends GenericImageMetadata {
         final RationalNumber[] longitude = (RationalNumber[]) longitudeField.getValue();
 
         if (latitude.length != 3) {
-            coverage[7] = true;
+            this.coverage[7] = true;
             throw new ImagingException("Expected three values for latitude and longitude.");
         }
         if (longitude.length != 3) {
-            coverage[8] = true;
+            this.coverage[8] = true;
             throw new ImagingException("Expected three values for latitude and longitude.");
         }
 
-        coverage[9] = true;
+        this.coverage[9] = true;
 
         final RationalNumber latitudeDegrees = latitude[0];
         final RationalNumber latitudeMinutes = latitude[1];
@@ -790,8 +791,19 @@ public class TiffImageMetadata extends GenericImageMetadata {
         final RationalNumber longitudeMinutes = longitude[1];
         final RationalNumber longitudeSeconds = longitude[2];
 
-        System.out.println("FUNCTION IS USED");
+        // System.out.println("FUNCTION IS USED");
         return new GpsInfo(latitudeRef, longitudeRef, latitudeDegrees, latitudeMinutes, latitudeSeconds, longitudeDegrees, longitudeMinutes, longitudeSeconds);
+    }
+    
+    public void printGetGpsInfoCoverage(){
+
+        System.out.println("Branches reached: ");
+        for (int i = 0; i < this.coverage.length; i++){
+            if (coverage[i] == true){
+                System.out.print(i + " ");
+            }
+        }
+        System.out.print("\n");
     }
 
     @Override
