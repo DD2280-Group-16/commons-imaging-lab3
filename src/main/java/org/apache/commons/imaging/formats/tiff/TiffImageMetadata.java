@@ -747,20 +747,24 @@ public class TiffImageMetadata extends GenericImageMetadata {
         //     return null;
         // }
 
-        if (latitudeRefField == null){
-            this.coverage[2] = true;
-            return null;
-        }
-        if (latitudeField == null){
-            this.coverage[3] = true;
-            return null;
-        }
-        if (longitudeRefField == null){
-            this.coverage[4] = true;
-            return null;
-        }
-        if (longitudeField == null){
-            this.coverage[5] = true;
+        // if (latitudeRefField == null){
+        //     this.coverage[2] = true;
+        //     return null;
+        // }
+        // if (latitudeField == null){
+        //     this.coverage[3] = true;
+        //     return null;
+        // }
+        // if (longitudeRefField == null){
+        //     this.coverage[4] = true;
+        //     return null;
+        // }
+        // if (longitudeField == null){
+        //     this.coverage[5] = true;
+        //     return null;
+        // }
+
+        if (!validFieldCheck(latitudeRefField, latitudeField, longitudeRefField, longitudeField)){
             return null;
         }
 
@@ -795,6 +799,7 @@ public class TiffImageMetadata extends GenericImageMetadata {
         return new GpsInfo(latitudeRef, longitudeRef, latitudeDegrees, latitudeMinutes, latitudeSeconds, longitudeDegrees, longitudeMinutes, longitudeSeconds);
     }
     
+    // ============= HELPER FUNCTIONS =================
     public void printGetGpsInfoCoverage(){
 
         System.out.println("Branches reached: ");
@@ -806,6 +811,23 @@ public class TiffImageMetadata extends GenericImageMetadata {
         System.out.print("\n");
     }
 
+    /**
+     * Returns false if GPS fields are null. Used to lower the CCN of the getGpsInfo() function.
+     * @param latitudeRefField
+     * @param latitudeField
+     * @param longitudeRefField
+     * @param longitudeField
+     * @return
+     */
+    public static boolean validFieldCheck(TiffField latitudeRefField, TiffField latitudeField, TiffField longitudeRefField, TiffField longitudeField){
+        if (latitudeRefField == null || latitudeField == null || longitudeRefField == null || longitudeField == null) {
+            return false;
+        }
+        return true;
+    }
+
+
+    // ================================================
     @Override
     public List<? extends ImageMetadataItem> getItems() {
         final List<ImageMetadataItem> result = new ArrayList<>();
