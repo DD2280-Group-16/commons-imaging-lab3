@@ -174,7 +174,7 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
                 false);
 
         if (chunks.isEmpty()) {
-            throw new ImagingException("PNG: no chunks");
+            throw new ImagingException("PNG: no chunks"); 
         }
 
         final List<PngChunk> IHDRs = filterChunks(chunks, ChunkType.IHDR);

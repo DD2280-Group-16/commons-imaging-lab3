@@ -23,24 +23,26 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.bytesource.ByteSource;
 import org.apache.commons.imaging.common.GenericImageMetadata;
 import org.apache.commons.imaging.common.ImageMetadata;
+import org.apache.commons.imaging.formats.png.chunks.PngChunk;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.internal.Debug;
 import org.apache.commons.imaging.test.TestResources;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.common.input.BomInput.BytesProcessedNotification;
 
 class PngReadTest extends AbstractPngTest {
 
@@ -100,6 +102,7 @@ class PngReadTest extends AbstractPngTest {
                 metadata.getExif()
                         .findDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT)
                         .getFieldValue(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION));
+
         System.out.println("test 2");
         System.out.println("Coverage Map: " + Arrays.toString(parser.reach));
 
@@ -181,4 +184,58 @@ class PngReadTest extends AbstractPngTest {
         System.out.println("Coverage Map: " + Arrays.toString(parser.reach));
 
     }
+
+
+    @Test
+    void testReadOneChunk() throws ImagingException, IOException {
+
+        byte[] oneChunkPNG = new byte[] {
+
+                // signature
+                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+
+                // start
+                0x00, 0x00, 0x00, 0x0D,
+
+                // type
+                'I', 'H', 'D', 'R',
+
+                // height
+                0x00, 0x00, 0x00, 0x01,
+
+                // width
+                0x00, 0x00, 0x00, 0x01,
+
+                // image metadata 
+                0x08, 0x02, 0x00, 0x00, 0x00,
+
+                // end
+                0x00, 0x00, 0x00, 0x00
+        };
+
+        final PngImageParser parser = new PngImageParser();
+
+        assertEquals(parser.getImageSize((ByteSource.array(oneChunkPNG)), new PngImagingParameters()).getHeight(), 1);
+
+        System.out.println("NEW TEST READ ONE CHUNK");
+        System.out.println("Coverage Map: " + Arrays.toString(parser.reach));
+    }
+
+    @Test
+    void testReadNegativeLengthPNG() throws ImagingException, IOException {
+
+        byte[] badPng = new byte[] {
+                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
+
+        final PngImageParser parser = new PngImageParser();
+
+        assertThrows(ImagingException.class, () -> {
+            parser.getImageSize((ByteSource.array(badPng)), new PngImagingParameters());
+        });
+
+        System.out.println("NEW TEST negative length byte source");
+        System.out.println("Coverage Map: " + Arrays.toString(parser.reach));
+    }
+
 }
