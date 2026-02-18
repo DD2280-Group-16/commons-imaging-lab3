@@ -16,6 +16,14 @@ for each project, along with reason(s) why you changed to a different one.
 1. What are your results for five complex functions?
 * Did all methods (tools vs. manual count) get the same result?
 * Are the results clear?
+
+The complex functions used by the group to analyze were, guessFormat(), getGpsInfo(), getBufferedImage() (in the PngImageParser.java file), getValueDescription(), and readImageContents(). The group started first by analyzing every function with the lizard tool.
+
+guessFormat() had complexity 33,
+getGpsInfo() had a complexity of 8,
+getBufferedImage() had a complexity of 27,
+
+
 2. Are the functions just complex, or also long?
 3. What is the purpose of the functions?
 4. Are exceptions taken into account in the given measurements?
