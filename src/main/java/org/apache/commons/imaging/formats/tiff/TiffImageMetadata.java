@@ -719,7 +719,7 @@ public class TiffImageMetadata extends GenericImageMetadata {
         return tag.getValue(field);
     }
 
-    private boolean[] coverage = new boolean[16]; // Coverage tracker
+    private boolean[] coverage = new boolean[15]; // Coverage tracker
 
 
     /**
@@ -802,8 +802,6 @@ public class TiffImageMetadata extends GenericImageMetadata {
         else {
             this.coverage[14] = true;
         }
-
-        this.coverage[15] = true;
 
         final RationalNumber latitudeDegrees = latitude[0];
         final RationalNumber latitudeMinutes = latitude[1];
