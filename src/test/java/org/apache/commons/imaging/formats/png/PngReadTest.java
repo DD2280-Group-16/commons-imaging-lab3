@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.imaging.ImageInfo;
@@ -142,8 +141,6 @@ class PngReadTest extends AbstractPngTest {
         final PngImageParser parser = new PngImageParser();
         assertThrows(ImagingException.class,
                 () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
-        System.out.println(Arrays.toString(parser.reach));
-
     }
 
     /**
@@ -163,6 +160,5 @@ class PngReadTest extends AbstractPngTest {
         final PngImageParser parser = new PngImageParser();
         assertThrows(ImagingException.class,
                 () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
-        System.out.println(Arrays.toString(parser.reach));
     }
 }

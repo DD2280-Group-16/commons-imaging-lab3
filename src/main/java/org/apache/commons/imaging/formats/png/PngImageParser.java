@@ -29,7 +29,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -166,11 +165,7 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
 
     // private static final int tRNS = CharsToQuad('t', 'R', 'N', 's');
 
-    final Boolean[] reach = new Boolean[50];
-    {
-        Arrays.fill(reach, false);
-    }
-
+    final ArrayList<Integer> reached = new ArrayList<>();
 
     @Override
     public BufferedImage getBufferedImage(final ByteSource byteSource, final PngImagingParameters params)
@@ -182,13 +177,15 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
                 false);
 
         if (chunks.isEmpty()) {
-            reach[1] = true;
+
+            reached.add(1);
             throw new ImagingException("PNG: no chunks");
         }
 
         final List<PngChunk> IHDRs = filterChunks(chunks, ChunkType.IHDR);
         if (IHDRs.size() != 1) {
-            reach[2] = true;
+
+            reached.add(2);
             throw new ImagingException("PNG contains more than one Header");
         }
 
@@ -196,25 +193,29 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
 
         final List<PngChunk> PLTEs = filterChunks(chunks, ChunkType.PLTE);
         if (PLTEs.size() > 1) {
-            reach[3] = true;
+
+            reached.add(3);
             throw new ImagingException("PNG contains more than one Palette");
         }
 
         PngChunkPlte pngChunkPLTE = null;
         if (PLTEs.size() == 1) {
-            reach[4] = true;
+
+            reached.add(4);
             pngChunkPLTE = (PngChunkPlte) PLTEs.get(0);
         }
 
         final List<PngChunk> IDATs = filterChunks(chunks, ChunkType.IDAT);
         if (IDATs.isEmpty()) {
-            reach[5] = true;
+
+            reached.add(5);
             throw new ImagingException("PNG missing image data");
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (final PngChunk IDAT : IDATs) {
-            reach[6] = true;
+
+            reached.add(6);
             final PngChunkIdat pngChunkIDAT = (PngChunkIdat) IDAT;
             final byte[] bytes = pngChunkIDAT.getBytes();
             // System.out.println(i + ": bytes: " + bytes.length);
@@ -229,7 +230,8 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
 
         final List<PngChunk> tRNSs = filterChunks(chunks, ChunkType.tRNS);
         if (!tRNSs.isEmpty()) {
-            reach[7] = true;
+
+            reached.add(7);
             final PngChunk pngChunktRNS = tRNSs.get(0);
             abstractTransparencyFilter = getTransparencyFilter(pngChunkIHDR.getPngColorType(), pngChunktRNS);
         }
@@ -241,29 +243,36 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
             final List<PngChunk> gAMAs = filterChunks(chunks, ChunkType.gAMA);
             final List<PngChunk> iCCPs = filterChunks(chunks, ChunkType.iCCP);
             if (sRGBs.size() > 1) {
-                reach[8] = true;
+
+                reached.add(8);
                 throw new ImagingException("PNG: unexpected sRGB chunk");
             }
             if (gAMAs.size() > 1) {
-                reach[9] = true;
+
+                reached.add(9);
                 throw new ImagingException("PNG: unexpected gAMA chunk");
             }
             if (iCCPs.size() > 1) {
-                reach[10] = true;
+
+                reached.add(10);
                 throw new ImagingException("PNG: unexpected iCCP chunk");
             }
 
             if (sRGBs.size() == 1) {
-                reach[11] = true;
+
+                reached.add(11);
                 // no color management necessary.
                 if (LOGGER.isLoggable(Level.FINEST)) {
-                    reach[12] = true;
+
+                    reached.add(12);
                     LOGGER.finest("sRGB, no color management necessary.");
                 }
             } else if (iCCPs.size() == 1) {
-                reach[13] = true;
+
+                reached.add(13);
                 if (LOGGER.isLoggable(Level.FINEST)) {
-                    reach[14] = true;
+
+                    reached.add(14);
                     LOGGER.finest("iCCP.");
                 }
 
@@ -271,14 +280,17 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
                 final byte[] bytes = pngChunkiCCP.getUncompressedProfile();
 
                 try {
-                    reach[15] = true;
+
+                    reached.add(15);
                     iccProfile = ICC_Profile.getInstance(bytes);
                 } catch (final IllegalArgumentException iae) {
-                    reach[16] = true;
+
+                    reached.add(16);
                     throw new ImagingException("The image data does not correspond to a valid ICC Profile", iae);
                 }
             } else if (gAMAs.size() == 1) {
-                reach[17] = true;
+
+                reached.add(17);
                 final PngChunkGama pngChunkgAMA = (PngChunkGama) gAMAs.get(0);
                 final double gamma = pngChunkgAMA.getGamma();
 
@@ -287,12 +299,14 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
                 final double targetGamma = 1.0;
                 final double diff = Math.abs(targetGamma - gamma);
                 if (diff >= 0.5) {
-                    reach[18] = true;
+
+                    reached.add(18);
                     gammaCorrection = new GammaCorrection(gamma, targetGamma);
                 }
 
                 if (gammaCorrection != null && pngChunkPLTE != null) {
-                    reach[19] = true;
+
+                    reached.add(19);
                     pngChunkPLTE.correct(gammaCorrection);
                 }
 
@@ -306,7 +320,8 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
             final int bitDepth = pngChunkIHDR.getBitDepth();
 
             if (pngChunkIHDR.getFilterMethod() != 0) {
-                reach[20] = true;
+
+                reached.add(20);
                 throw new ImagingException("PNG: unknown FilterMethod: " + pngChunkIHDR.getFilterMethod());
             }
 
@@ -316,10 +331,12 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
 
             BufferedImage result;
             if (pngColorType.isGreyscale()) {
-                reach[21] = true;
+
+                reached.add(21);
                 result = getBufferedImageFactory(params).getGrayscaleBufferedImage(width, height, hasAlpha);
             } else {
-                reach[22] = true;
+
+                reached.add(22);
                 result = getBufferedImageFactory(params).getColorBufferedImage(width, height, hasAlpha);
             }
 
@@ -330,29 +347,34 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
 
             switch (pngChunkIHDR.getInterlaceMethod()) {
                 case NONE:
-                    reach[23] = true;
+
+                    reached.add(23);
                     abstractScanExpediter = new ScanExpediterSimple(width, height, iis, result, pngColorType, bitDepth,
                             bitsPerPixel, pngChunkPLTE, gammaCorrection,
                             abstractTransparencyFilter);
                     break;
                 case ADAM7:
-                    reach[24] = true;
+
+                    reached.add(24);
                     abstractScanExpediter = new ScanExpediterInterlaced(width, height, iis, result, pngColorType,
                             bitDepth, bitsPerPixel, pngChunkPLTE,
                             gammaCorrection, abstractTransparencyFilter);
                     break;
                 default:
-                    reach[25] = true;
+
+                    reached.add(25);
                     throw new ImagingException("Unknown InterlaceMethod: " + pngChunkIHDR.getInterlaceMethod());
             }
 
             abstractScanExpediter.drive();
 
             if (iccProfile != null) {
-                reach[26] = true;
+
+                reached.add(26);
                 final boolean isSrgb = new IccProfileParser().isSrgb(iccProfile);
                 if (!isSrgb) {
-                    reach[27] = true;
+
+                    reached.add(27);
                     final ICC_ColorSpace cs = new ICC_ColorSpace(iccProfile);
 
                     final ColorModel srgbCM = ColorModel.getRGBdefault();
@@ -362,10 +384,11 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
                 }
             }
 
+            System.out.println(reached.size() / 28.0);
+            System.out.println(reached.toString());
+
             return result;
-
         }
-
     }
 
     /**
