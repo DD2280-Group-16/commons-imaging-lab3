@@ -81,14 +81,14 @@ We all made our own implementations of a coverage tool but they all are very sim
     - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/refactor-code-branch-markus/src/test/java/org/apache/commons/imaging/ImagingGuessFormatTest.java
     - Added 4 tests
 - Elin
-    - Comments:
+    - Comments: "PNG has to have chunks in order to be read", "PNGs are not allowed to have more than one header"
     - Old coverage: 66% with JoCoCO and 0% with DIY tool
     - New coverage: 70% with JaCoCo and 14% with DIY tool.
     - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/elin/implement-tests/src/test/java/org/apache/commons/imaging/formats/png/PngReadTest.java
 - Ben
-    - Comments:
-    - Old coverage:
-    - New coverage:
+    - Comments: "not returning null",  "returning null for invalid longitude/latitude gps fields"
+    - Old coverage: 7% with JoCoCo and 6.66% with DIY tool.
+    - New coverage: 78% with JoCoCo and 80% with DIY tool.
     - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/ben/create-tests-for-function-getGpsInfo/src/test/java/org/apache/commons/imaging/formats/jpeg/exif/GpsTest.java
     - Added 4 tests
 - Ali
@@ -103,14 +103,6 @@ We all made our own implementations of a coverage tool but they all are very sim
     - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/oskar/coverage-improvements/src/test/java/org/apache/commons/imaging/formats/bmp/BmpMoreCoverageTest.java
     - Added 4 tests
 
-
-
-Show the comments that describe the requirements for the coverage.
-Report of old coverage: [link]
-Report of new coverage: [link]
-Test cases added:
-git diff ...
-Number of test cases added: two per team member (P) or at least four (P+).
 ## Self-assessment: Way of working
 Current state according to the Essence standard: ...
 Was the self-assessment unanimous? Any doubts about certain items?
