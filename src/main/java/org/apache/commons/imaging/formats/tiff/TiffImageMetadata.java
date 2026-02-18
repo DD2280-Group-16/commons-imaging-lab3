@@ -719,7 +719,7 @@ public class TiffImageMetadata extends GenericImageMetadata {
         return tag.getValue(field);
     }
 
-    private boolean[] coverage = new boolean[10]; // Coverage tracker
+    private boolean[] coverage = new boolean[16]; // Coverage tracker
 
 
     /**
