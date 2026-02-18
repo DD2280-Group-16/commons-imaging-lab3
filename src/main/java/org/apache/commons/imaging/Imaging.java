@@ -712,10 +712,11 @@ public final class Imaging {
      *  ---------------------------------------------------------------------
      *  After changes:
      * Total number of Cyclomatic Complexity is 64
-     * Total coverage: 76.8%
+     * 
      *  ---------------------------------------------------------------------
      *  Before adding tests:
      *  Own tool %: 55.55555555555556
+     *  Total coverage: 76.8%
      *  ---------------------------------------------------------------------
      *  After Tests:
         Own tool %: 61.904761904761905
