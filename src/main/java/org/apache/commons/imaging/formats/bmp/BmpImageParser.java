@@ -462,14 +462,23 @@ public class BmpImageParser extends AbstractImageParser<BmpImagingParameters> {
                 colorSpace, gammaRed, gammaGreen, gammaBlue, intent, profileData, profileSize, reservedV5);
     }
 
-    private BmpImageContents readImageContents(final InputStream is, final FormatCompliance formatCompliance) throws ImagingException, IOException {
+    private BmpImageContents readImageContents(final InputStream is, final FormatCompliance formatCompliance)
+            throws ImagingException, IOException {
         final BmpHeaderInfo bhi = readBmpHeaderInfo(is, formatCompliance);
 
+        // Refactored: Broken down into 3 distinct functions
+        final byte[] colorTable = readColorTable(bhi, is);
+        final byte[] imageData = readImageData(bhi, is, colorTable == null ? 0 : colorTable.length);
+        final AbstractPixelParser abstractPixelParser = createPixelParser(bhi, colorTable, imageData);
+
+        return new BmpImageContents(bhi, colorTable, imageData, abstractPixelParser);
+    }
+
+    private byte[] readColorTable(final BmpHeaderInfo bhi, final InputStream is) throws ImagingException, IOException {
         int colorTableSize = bhi.colorsUsed;
         if (colorTableSize == 0) {
             colorTableSize = 1 << bhi.bitsPerPixel;
         }
-
         if (LOGGER.isLoggable(Level.FINE)) {
             debugNumber("ColorsUsed", bhi.colorsUsed, 4);
             debugNumber("BitsPerPixel", bhi.bitsPerPixel, 4);
@@ -478,68 +487,26 @@ public class BmpImageParser extends AbstractImageParser<BmpImagingParameters> {
             debugNumber("Compression", bhi.compression, 4);
         }
 
-        // A palette is always valid, even for images that don't need it
-        // (like 32 bpp), it specifies the "optimal color palette" for
-        // when the image is displayed on a <= 256 color graphics card.
         final int paletteLength;
-        int rleSamplesPerByte = 0;
-        boolean rle = false;
-
         switch (bhi.compression) {
-        case BI_RGB:
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Compression: BI_RGB");
-            }
-            if (bhi.bitsPerPixel <= 8) {
+            case BI_RGB:
+                if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Compression: BI_RGB");
+                paletteLength = (bhi.bitsPerPixel <= 8) ? 4 * colorTableSize : 0;
+                break;
+            case BI_RLE4:
+                if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Compression: BI_RLE4");
                 paletteLength = 4 * colorTableSize;
-            } else {
-                paletteLength = 0;
-            }
-            // BytesPerPaletteEntry = 0;
-            // System.out.println("Compression: BI_RGBx2: " + bhi.BitsPerPixel);
-            // System.out.println("Compression: BI_RGBx2: " + (bhi.BitsPerPixel
-            // <= 16));
-            break;
-
-        case BI_RLE4:
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Compression: BI_RLE4");
-            }
-            paletteLength = 4 * colorTableSize;
-            rleSamplesPerByte = 2;
-            // ExtraBitsPerPixel = 4;
-            rle = true;
-            // // BytesPerPixel = 2;
-            // // BytesPerPaletteEntry = 0;
-            break;
-        //
-        case BI_RLE8:
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Compression: BI_RLE8");
-            }
-            paletteLength = 4 * colorTableSize;
-            rleSamplesPerByte = 1;
-            // ExtraBitsPerPixel = 8;
-            rle = true;
-            // BytesPerPixel = 2;
-            // BytesPerPaletteEntry = 0;
-            break;
-        //
-        case BI_BITFIELDS:
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Compression: BI_BITFIELDS");
-            }
-            if (bhi.bitsPerPixel <= 8) {
+                break;
+            case BI_RLE8:
+                if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Compression: BI_RLE8");
                 paletteLength = 4 * colorTableSize;
-            } else {
-                paletteLength = 0;
-            }
-            // BytesPerPixel = 2;
-            // BytesPerPaletteEntry = 4;
-            break;
-
-        default:
-            throw new ImagingException("BMP: Unknown Compression: " + bhi.compression);
+                break;
+            case BI_BITFIELDS:
+                if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Compression: BI_BITFIELDS");
+                paletteLength = (bhi.bitsPerPixel <= 8) ? 4 * colorTableSize : 0;
+                break;
+            default:
+                throw new ImagingException("BMP: Unknown Compression: " + bhi.compression);
         }
 
         if (paletteLength < 0) {
@@ -550,28 +517,21 @@ public class BmpImageParser extends AbstractImageParser<BmpImagingParameters> {
         if (paletteLength > 0) {
             colorTable = readBytes("ColorTable", is, paletteLength, "Not a Valid BMP File");
         }
-
         if (LOGGER.isLoggable(Level.FINE)) {
             debugNumber("paletteLength", paletteLength, 4);
             LOGGER.fine("ColorTable: " + (colorTable == null ? "null" : Integer.toString(colorTable.length)));
         }
+        return colorTable;
+    }
 
+    private byte[] readImageData(final BmpHeaderInfo bhi, final InputStream is, final int paletteLength) throws ImagingException, IOException {
         int imageLineLength = (bhi.bitsPerPixel * bhi.width + 7) / 8;
-
         if (LOGGER.isLoggable(Level.FINE)) {
-            final int pixelCount = bhi.width * bhi.height;
-            // this.debugNumber("Total BitsPerPixel",
-            // (ExtraBitsPerPixel + bhi.BitsPerPixel), 4);
-            // this.debugNumber("Total Bit Per Line",
-            // ((ExtraBitsPerPixel + bhi.BitsPerPixel) * bhi.Width), 4);
-            // this.debugNumber("ExtraBitsPerPixel", ExtraBitsPerPixel, 4);
             debugNumber("bhi.Width", bhi.width, 4);
             debugNumber("bhi.Height", bhi.height, 4);
             debugNumber("ImageLineLength", imageLineLength, 4);
-            // this.debugNumber("imageDataSize", imageDataSize, 4);
-            debugNumber("PixelCount", pixelCount, 4);
+            debugNumber("PixelCount", bhi.width * bhi.height, 4);
         }
-        // int ImageLineLength = BytesPerPixel * bhi.Width;
         while (imageLineLength % 4 != 0) {
             imageLineLength++;
         }
@@ -585,47 +545,42 @@ public class BmpImageParser extends AbstractImageParser<BmpImagingParameters> {
         }
         final int extraBytes = bhi.bitmapDataOffset - expectedDataOffset;
         if (extraBytes < 0 || extraBytes > bhi.fileSize) {
-            throw new ImagingException("BMP has invalid image data offset: " + bhi.bitmapDataOffset + " (expected: " + expectedDataOffset + ", paletteLength: "
-                    + paletteLength + ", headerSize: " + headerSize + ")");
+            throw new ImagingException("BMP has invalid image data offset: " + bhi.bitmapDataOffset + " (expected: " + expectedDataOffset + ", paletteLength: " + paletteLength + ", headerSize: " + headerSize + ")");
         }
         if (extraBytes > 0) {
             readBytes("BitmapDataOffset", is, extraBytes, "Not a Valid BMP File");
         }
 
         final int imageDataSize = bhi.height * imageLineLength;
-
         if (LOGGER.isLoggable(Level.FINE)) {
             debugNumber("imageDataSize", imageDataSize, 4);
         }
 
         final byte[] imageData;
-        if (rle) {
+        if (bhi.compression == BI_RLE4 || bhi.compression == BI_RLE8) {
+            int rleSamplesPerByte = (bhi.compression == BI_RLE4) ? 2 : 1;
             imageData = getRleBytes(is, rleSamplesPerByte);
         } else {
             imageData = readBytes("ImageData", is, imageDataSize, "Not a Valid BMP File");
         }
-
         if (LOGGER.isLoggable(Level.FINE)) {
             debugNumber("ImageData.length", imageData.length, 4);
         }
+        return imageData;
+    }
 
-        final AbstractPixelParser abstractPixelParser;
+    private AbstractPixelParser createPixelParser(final BmpHeaderInfo bhi, final byte[] colorTable, final byte[] imageData) throws ImagingException {
         switch (bhi.compression) {
-        case BI_RLE4:
-        case BI_RLE8:
-            abstractPixelParser = new PixelParserRle(bhi, colorTable, imageData);
-            break;
-        case BI_RGB:
-            abstractPixelParser = new PixelParserRgb(bhi, colorTable, imageData);
-            break;
-        case BI_BITFIELDS:
-            abstractPixelParser = new PixelParserBitFields(bhi, colorTable, imageData);
-            break;
-        default:
-            throw new ImagingException("BMP: Unknown Compression: " + bhi.compression);
+            case BI_RLE4:
+            case BI_RLE8:
+                return new PixelParserRle(bhi, colorTable, imageData);
+            case BI_RGB:
+                return new PixelParserRgb(bhi, colorTable, imageData);
+            case BI_BITFIELDS:
+                return new PixelParserBitFields(bhi, colorTable, imageData);
+            default:
+                throw new ImagingException("BMP: Unknown Compression: " + bhi.compression);
         }
-
-        return new BmpImageContents(bhi, colorTable, imageData, abstractPixelParser);
     }
 
     @Override
