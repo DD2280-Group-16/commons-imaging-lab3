@@ -1123,7 +1123,184 @@ public final class Imaging {
         }
     }
 
+//-------------------------------------------------------------------------------------------------------------------------------------
+/*
+    START OF REFACTORING HERE
+*/
+//-------------------------------------------------------------------------------------------------------------------------------------
+    /** 
+     *  Main refactored function. Uses four other functions to do the same as before.
+     *  Reads in 16 bytes and tests them to see if the input is of any of the formats.
+     *  Helper function 1: readHeader(), reads the first 16 bytes of the InputStream. Only 12 are actually needed.
+     *  Helper function 2: checkFirstTwoBytes compares the first two bytes against some common formats.
+     *  Helper function 3: checkComplexFormats compares the first 4 bytes and first 12 bytes against the formats JBIG2 and RIFFWEBP
+     *  Helper function 4: guessByExtension looks at the extension of the input file and try to determine the format as a last resort.
+     * 
+     *  This refactoring changed guessFormat from a CC of 33(originally) to a CC of 4 which is an decrease of:
+     *  33 - 4 = 29. 29 / 33 = 0.8787 which is about 87.9%
+     * @param byteSource
+     * @return
+     * @throws IOException
+     */
+    public static ImageFormat guessFormatRefactored(final ByteSource byteSource) throws IOException {
+        if(byteSource == null) {
+            return ImageFormats.UNKNOWN;
+        }
 
+        try (InputStream is = byteSource.getInputStream()) {
+
+            byte[] header = readHeader(is, 16);
+
+            ImageFormat format = checkFirstTwoBytes(header);
+            if(format != null) {
+                return format;
+            }
+            
+            format = checkComplexFormats(header);
+            if(format != null) {
+                return format;
+            }
+            return guessByExtension(byteSource);
+        }
+    }
+
+    /**
+     *  Function that reads in the magic numbers from the InputStream
+     * @param is
+     * @param length
+     * @return
+     * @throws IOException
+     */
+    private static byte[] readHeader(InputStream is, int length) throws IOException {
+        byte[] header = new byte[length];
+        int totalRead = 0;
+
+        while (totalRead < length) {
+            int read = is.read(header, totalRead, length - totalRead);
+            if (read == -1) {
+                throw new IllegalArgumentException("Couldn't read magic numbers to guess format.");
+            }
+        totalRead += read;
+        }
+        return header;
+    }
+
+    /**
+     *  Function that compares the first two bytes against common numbers.
+     * @param header
+     * @return
+     */
+    private static ImageFormat checkFirstTwoBytes(byte[] header) {
+        int b1 = header[0] & 0xff;
+        int b2 = header[1] & 0xff;
+        int[] bytePair = { b1, b2 };
+
+        if (compareBytePair(MAGIC_NUMBERS_GIF, bytePair))
+            return ImageFormats.GIF;
+
+        if (compareBytePair(MAGIC_NUMBERS_PNG, bytePair))
+            return ImageFormats.PNG;
+
+        if (compareBytePair(MAGIC_NUMBERS_JPEG, bytePair))
+            return ImageFormats.JPEG;
+
+        if (compareBytePair(MAGIC_NUMBERS_BMP, bytePair))
+            return ImageFormats.BMP;
+
+        if (compareBytePair(MAGIC_NUMBERS_TIFF_MOTOROLA, bytePair))
+            return ImageFormats.TIFF;
+
+        if (compareBytePair(MAGIC_NUMBERS_TIFF_INTEL, bytePair))
+            return ImageFormats.TIFF;
+
+        if (compareBytePair(MAGIC_NUMBERS_PSD, bytePair))
+            return ImageFormats.PSD;
+
+        if (compareBytePair(MAGIC_NUMBERS_PAM, bytePair))
+            return ImageFormats.PAM;
+
+        if (compareBytePair(MAGIC_NUMBERS_PBM_A, bytePair))
+            return ImageFormats.PBM;
+
+        if (compareBytePair(MAGIC_NUMBERS_PBM_B, bytePair))
+            return ImageFormats.PBM;
+
+        if (compareBytePair(MAGIC_NUMBERS_PGM_A, bytePair))
+            return ImageFormats.PGM;
+
+        if (compareBytePair(MAGIC_NUMBERS_PGM_B, bytePair))
+            return ImageFormats.PGM;
+
+        if (compareBytePair(MAGIC_NUMBERS_PPM_A, bytePair))
+            return ImageFormats.PPM;
+
+        if (compareBytePair(MAGIC_NUMBERS_PPM_B, bytePair))
+            return ImageFormats.PPM;
+
+        if (compareBytePair(MAGIC_NUMBERS_ICNS, bytePair))
+            return ImageFormats.ICNS;
+
+        if (compareBytePair(MAGIC_NUMBERS_DCX, bytePair))
+            return ImageFormats.DCX;
+
+        if (compareBytePair(MAGIC_NUMBERS_RGBE, bytePair))
+            return ImageFormats.RGBE;
+
+        return null;
+    }
+
+    /**
+     *  Function that handles the more complex formats JBIG2 and RIFF WEBP
+     * @param header
+     * @return
+     */
+    private static ImageFormat checkComplexFormats(byte[] header) {
+        // JBIG2
+        if (compareBytePair(MAGIC_NUMBERS_JBIG2_1, new int[]{header[0] & 0xff, header[1] & 0xff})) {
+            int[] nextPair = { header[2] & 0xff, header[3] & 0xff };
+            if (compareBytePair(MAGIC_NUMBERS_JBIG2_2, nextPair)) {
+                return ImageFormats.JBIG2;
+            }
+        }
+        /**
+         * private static final int[] MAGIC_NUMBERS_RIFF_1 = { 0x52, 0x49 };
+         * private static final int[] MAGIC_NUMBERS_RIFF_2 = { 0x46, 0x46 };
+         * private static final byte[] MAGIC_NUMBERS_WEBP = { 0x57, 0x45, 0x42, 0x50, };
+         * Represents the letters R I F F W E B P
+         * The original code checks if the first pair is equal to { 0x52, 0x49 } and then checks if the next pair is equal to { 0x46, 0x46 }
+         * and finally checks if the next 4 bytes are { 0x57, 0x45, 0x42, 0x50, } and then returns ImageFormats.WEBP
+         */
+        // WEBP (RIFF)
+        if (header.length >= 12 &&
+            header[0] == 'R' && header[1] == 'I' && header[2] == 'F' && header[3] == 'F' && header[8] == 'W' && header[9] == 'E' && header[10] == 'B' && header[11] == 'P') {
+            return ImageFormats.WEBP;
+        }
+
+        return null;
+    }
+
+    /**
+     *  Function that Guesses the format based on the extension.
+     * @param byteSource
+     * @return
+     */
+    private static ImageFormat guessByExtension(ByteSource byteSource) {
+    return Stream.of(ImageFormats.values())
+        .filter(format -> Stream.of(format.getExtensions())
+            .anyMatch(ext -> {
+                String name = byteSource.getFileName();
+                if (StringUtils.isEmpty(name)) return false;
+                String fileExt = name.substring(name.lastIndexOf('.') + 1);
+                return fileExt.equalsIgnoreCase(ext);
+            })
+        ).findFirst().orElse(ImageFormats.UNKNOWN);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+/*
+    END OF REFACTORING HERE
+*/
+//-------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Attempts to determine the image format of a file based on its "magic numbers," the first bytes of the data.
