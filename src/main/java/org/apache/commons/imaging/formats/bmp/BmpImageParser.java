@@ -475,167 +475,210 @@ public class BmpImageParser extends AbstractImageParser<BmpImagingParameters> {
 
   private BmpImageContents readImageContents(final InputStream is, final FormatCompliance formatCompliance)
       throws ImagingException, IOException {
+    CoverageTracker.markBranch(0);
+
     final BmpHeaderInfo bhi = readBmpHeaderInfo(is, formatCompliance);
 
     int colorTableSize = bhi.colorsUsed;
     if (colorTableSize == 0) {
+      CoverageTracker.markBranch(1);
       colorTableSize = 1 << bhi.bitsPerPixel;
+    } else {
+      CoverageTracker.markBranch(2);
     }
 
     if (LOGGER.isLoggable(Level.FINE)) {
+      CoverageTracker.markBranch(3);
       debugNumber("ColorsUsed", bhi.colorsUsed, 4);
       debugNumber("BitsPerPixel", bhi.bitsPerPixel, 4);
       debugNumber("ColorTableSize", colorTableSize, 4);
       debugNumber("bhi.colorsUsed", bhi.colorsUsed, 4);
       debugNumber("Compression", bhi.compression, 4);
+    } else {
+      CoverageTracker.markBranch(4);
     }
 
-    // A palette is always valid, even for images that don't need it
-    // (like 32 bpp), it specifies the "optimal color palette" for
-    // when the image is displayed on a <= 256 color graphics card.
     final int paletteLength;
     int rleSamplesPerByte = 0;
     boolean rle = false;
 
     switch (bhi.compression) {
       case BI_RGB:
+        CoverageTracker.markBranch(5);
         if (LOGGER.isLoggable(Level.FINE)) {
+          CoverageTracker.markBranch(6);
           LOGGER.fine("Compression: BI_RGB");
+        } else {
+          CoverageTracker.markBranch(7);
         }
         if (bhi.bitsPerPixel <= 8) {
+          CoverageTracker.markBranch(8);
           paletteLength = 4 * colorTableSize;
         } else {
+          CoverageTracker.markBranch(9);
           paletteLength = 0;
         }
-        // BytesPerPaletteEntry = 0;
-        // System.out.println("Compression: BI_RGBx2: " + bhi.BitsPerPixel);
-        // System.out.println("Compression: BI_RGBx2: " + (bhi.BitsPerPixel
-        // <= 16));
         break;
 
       case BI_RLE4:
+        CoverageTracker.markBranch(10);
         if (LOGGER.isLoggable(Level.FINE)) {
+          CoverageTracker.markBranch(11);
           LOGGER.fine("Compression: BI_RLE4");
+        } else {
+          CoverageTracker.markBranch(12);
         }
         paletteLength = 4 * colorTableSize;
         rleSamplesPerByte = 2;
-        // ExtraBitsPerPixel = 4;
         rle = true;
-        // // BytesPerPixel = 2;
-        // // BytesPerPaletteEntry = 0;
         break;
-      //
+
       case BI_RLE8:
+        CoverageTracker.markBranch(13);
         if (LOGGER.isLoggable(Level.FINE)) {
+          CoverageTracker.markBranch(14);
           LOGGER.fine("Compression: BI_RLE8");
+        } else {
+          CoverageTracker.markBranch(15);
         }
         paletteLength = 4 * colorTableSize;
         rleSamplesPerByte = 1;
-        // ExtraBitsPerPixel = 8;
         rle = true;
-        // BytesPerPixel = 2;
-        // BytesPerPaletteEntry = 0;
         break;
-      //
+
       case BI_BITFIELDS:
+        CoverageTracker.markBranch(16);
         if (LOGGER.isLoggable(Level.FINE)) {
+          CoverageTracker.markBranch(17);
           LOGGER.fine("Compression: BI_BITFIELDS");
+        } else {
+          CoverageTracker.markBranch(18);
         }
         if (bhi.bitsPerPixel <= 8) {
+          CoverageTracker.markBranch(19);
           paletteLength = 4 * colorTableSize;
         } else {
+          CoverageTracker.markBranch(20);
           paletteLength = 0;
         }
-        // BytesPerPixel = 2;
-        // BytesPerPaletteEntry = 4;
         break;
 
       default:
+        CoverageTracker.markBranch(21);
         throw new ImagingException("BMP: Unknown Compression: " + bhi.compression);
     }
 
     if (paletteLength < 0) {
+      CoverageTracker.markBranch(22);
       throw new ImagingException("BMP: Invalid negative palette length: " + paletteLength);
     }
+    CoverageTracker.markBranch(23);
 
     byte[] colorTable = null;
     if (paletteLength > 0) {
+      CoverageTracker.markBranch(24);
       colorTable = readBytes("ColorTable", is, paletteLength, "Not a Valid BMP File");
+    } else {
+      CoverageTracker.markBranch(25);
     }
 
     if (LOGGER.isLoggable(Level.FINE)) {
+      CoverageTracker.markBranch(26);
       debugNumber("paletteLength", paletteLength, 4);
       LOGGER.fine("ColorTable: " + (colorTable == null ? "null" : Integer.toString(colorTable.length)));
+    } else {
+      CoverageTracker.markBranch(27);
     }
 
     int imageLineLength = (bhi.bitsPerPixel * bhi.width + 7) / 8;
 
     if (LOGGER.isLoggable(Level.FINE)) {
+      CoverageTracker.markBranch(28);
       final int pixelCount = bhi.width * bhi.height;
-      // this.debugNumber("Total BitsPerPixel",
-      // (ExtraBitsPerPixel + bhi.BitsPerPixel), 4);
-      // this.debugNumber("Total Bit Per Line",
-      // ((ExtraBitsPerPixel + bhi.BitsPerPixel) * bhi.Width), 4);
-      // this.debugNumber("ExtraBitsPerPixel", ExtraBitsPerPixel, 4);
       debugNumber("bhi.Width", bhi.width, 4);
       debugNumber("bhi.Height", bhi.height, 4);
       debugNumber("ImageLineLength", imageLineLength, 4);
-      // this.debugNumber("imageDataSize", imageDataSize, 4);
       debugNumber("PixelCount", pixelCount, 4);
+    } else {
+      CoverageTracker.markBranch(29);
     }
-    // int ImageLineLength = BytesPerPixel * bhi.Width;
+
     while (imageLineLength % 4 != 0) {
+      CoverageTracker.markBranch(30);
       imageLineLength++;
     }
+    CoverageTracker.markBranch(31);
 
     final int headerSize = BITMAP_FILE_HEADER_SIZE + bhi.bitmapHeaderSize
         + (bhi.bitmapHeaderSize == 40 && bhi.compression == BI_BITFIELDS ? 3 * 4 : 0);
     final int expectedDataOffset = headerSize + paletteLength;
 
     if (LOGGER.isLoggable(Level.FINE)) {
+      CoverageTracker.markBranch(32);
       debugNumber("bhi.BitmapDataOffset", bhi.bitmapDataOffset, 4);
       debugNumber("expectedDataOffset", expectedDataOffset, 4);
+    } else {
+      CoverageTracker.markBranch(33);
     }
+
     final int extraBytes = bhi.bitmapDataOffset - expectedDataOffset;
     if (extraBytes < 0 || extraBytes > bhi.fileSize) {
+      CoverageTracker.markBranch(34);
       throw new ImagingException("BMP has invalid image data offset: " + bhi.bitmapDataOffset + " (expected: "
           + expectedDataOffset + ", paletteLength: "
           + paletteLength + ", headerSize: " + headerSize + ")");
     }
+    CoverageTracker.markBranch(35);
+
     if (extraBytes > 0) {
+      CoverageTracker.markBranch(36);
       readBytes("BitmapDataOffset", is, extraBytes, "Not a Valid BMP File");
+    } else {
+      CoverageTracker.markBranch(37);
     }
 
     final int imageDataSize = bhi.height * imageLineLength;
 
     if (LOGGER.isLoggable(Level.FINE)) {
+      CoverageTracker.markBranch(38);
       debugNumber("imageDataSize", imageDataSize, 4);
+    } else {
+      CoverageTracker.markBranch(39);
     }
 
     final byte[] imageData;
     if (rle) {
+      CoverageTracker.markBranch(40);
       imageData = getRleBytes(is, rleSamplesPerByte);
     } else {
+      CoverageTracker.markBranch(41);
       imageData = readBytes("ImageData", is, imageDataSize, "Not a Valid BMP File");
     }
 
     if (LOGGER.isLoggable(Level.FINE)) {
+      CoverageTracker.markBranch(42);
       debugNumber("ImageData.length", imageData.length, 4);
+    } else {
+      CoverageTracker.markBranch(43);
     }
 
     final AbstractPixelParser abstractPixelParser;
     switch (bhi.compression) {
       case BI_RLE4:
       case BI_RLE8:
+        CoverageTracker.markBranch(44);
         abstractPixelParser = new PixelParserRle(bhi, colorTable, imageData);
         break;
       case BI_RGB:
+        CoverageTracker.markBranch(45);
         abstractPixelParser = new PixelParserRgb(bhi, colorTable, imageData);
         break;
       case BI_BITFIELDS:
+        CoverageTracker.markBranch(46);
         abstractPixelParser = new PixelParserBitFields(bhi, colorTable, imageData);
         break;
       default:
+        CoverageTracker.markBranch(47);
         throw new ImagingException("BMP: Unknown Compression: " + bhi.compression);
     }
 
