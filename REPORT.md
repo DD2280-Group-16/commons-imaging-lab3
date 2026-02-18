@@ -13,29 +13,47 @@ there is no need to write much here. If the first project(s) you picked
 ended up being unsuitable, you can describe the "onboarding experience"
 for each project, along with reason(s) why you changed to a different one.
 ## Complexity
-1. What are your results for five complex functions?
-* Did all methods (tools vs. manual count) get the same result?
-* Are the results clear?
 
-The complex functions used by the group to analyze were, guessFormat(), getGpsInfo(), getBufferedImage() (in the PngImageParser.java file), getValueDescription(), and readImageContents(). The group started first by analyzing every function with the lizard tool.
+### 1. What are your results for five complex functions?
+- Did all methods (tools vs. manual count) get the same result?
+- Are the results clear?
 
-guessFormat() had complexity 33,
-getGpsInfo() had a complexity of 8,
-getBufferedImage() had a complexity of 27,
-readImageContents() had a complexity that varied from 31-33 depending on the tool used,
-and getValueDescription hade a complexity of "...".
+The complex functions used by the group to analyze were `guessFormat()`, `getGpsInfo()`, `getBufferedImage()` (in `PngImageParser.java`), `getValueDescription()`, and `readImageContents()`. The group started first by analyzing every function with the Lizard tool.
 
-What was most interesting was when it came to the function readImageContents() where depending on the tool used, in this case Lizard and Jacoco, the answer was a little different. In this example, Lizard outputted a CCN of 32, whereas Jacoco got 31. This could most likely be due to how the tools handle the default case or ternary operations.
+| Function | CCN (Lizard) |
+|---|---|
+| `guessFormat()` | 33 |
+| `getGpsInfo()` | 8 |
+| `getBufferedImage()` | 27 |
+| `readImageContents()` | 31–33 (varies by tool) |
+| `getValueDescription()` | ... |
 
-2. Are the functions just complex, or also long?
+What was most interesting was when it came to the function `readImageContents()` where depending on the tool used, in this case Lizard and JaCoCo, the answer was a little different. In this example, Lizard outputed a CCN of 32, whereas JaCoCo got 31. This could most likely be due to how the tools handle the default case or ternary operations.
 
-In our case, we see how the complexity of the functions chosen tend to increase in complexity when the NLOC increases. Most likely due to them be more complicated and making more decisions. For instance, getGpsInfo() had an NLOC of 27 CCN of around 8, while guessFormat() had an NLOC of around 110.
+### 2. Are the functions just complex, or also long?
 
-3. What is the purpose of the functions?
+In our case, we see how the complexity of the functions chosen tend to increase in complexity when the NLOC increases. Most likely due to them be more complicated and making more decisions. For instance, `getGpsInfo()` had an NLOC of 27 CCN of around 8, while `guessFormat()` had an NLOC of around 110.
 
+### 3. What is the purpose of the functions?
 
-4. Are exceptions taken into account in the given measurements?
-5. Is the documentation clear w.r.t. all the possible outcomes?
+**`guessFormat()`:** The function identifies the image's format without having to rely on a file extension and instead, analyzing the first two bytes from the data, thereafter, comparing them to already known byte signatures.
+
+**`getGpsInfo()`:** This function extracts the GPS coordinates from metadata. Metadata is information about the image. It does this by locating the GPS sub-directory and searching for the latitude/longitude reference fields and returning a `GpsInfo` object.
+
+**`getBufferedImage()`:** Although there is no documentation regarding this function, this function decodes a PNG file into a `BufferedImage` object by decoding the pixels and important PNG chunks.
+
+**`getValueDescription()`:** This is a helper function that formats an integer into a readable string by showing both its decimal and hexadecimal values.
+
+**`readImageContents()`:** This is a helper function parses the raw binary structure of an image file into an object called `BmpImageContents`. This object is then used by other methods so it does not have to parse the binary structure if the image file itself.
+
+### 4. Are exceptions taken into account in the given measurements?
+
+In most cases, by counting exceptions as a terminating node in the flow graph rather than a separate node gave us the same results as for instance the Lizard tool which could most likely imply that Lizard does the same thing. Otherwise, we would be getting a lower complexity due to the increase in nodes.
+
+### 5. Is the documentation clear w.r.t. all the possible outcomes?
+
+Documentation is provided only for the functions `guessFormat()` and `getGpsInfo()`, but even in these examples, the documentation does not cover all of the possible branches, however, summarizes the possible returns rather than diving into detail in all the possible outcomes.
+
 ## Refactoring
 Plan for refactoring complex code:
 Estimated impact of refactoring (lower CC, but other drawbacks?).
