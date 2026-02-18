@@ -22,10 +22,18 @@ The complex functions used by the group to analyze were, guessFormat(), getGpsIn
 guessFormat() had complexity 33,
 getGpsInfo() had a complexity of 8,
 getBufferedImage() had a complexity of 27,
+readImageContents() had a complexity that varied from 31-33 depending on the tool used,
+and getValueDescription hade a complexity of "...".
 
+What was most interesting was when it came to the function readImageContents() where depending on the tool used, in this case Lizard and Jacoco, the answer was a little different. In this example, Lizard outputted a CCN of 32, whereas Jacoco got 31. This could most likely be due to how the tools handle the default case or ternary operations.
 
 2. Are the functions just complex, or also long?
+
+In our case, we see how the complexity of the functions chosen tend to increase in complexity when the NLOC increases. Most likely due to them be more complicated and making more decisions. For instance, getGpsInfo() had an NLOC of 27 CCN of around 8, while guessFormat() had an NLOC of around 110.
+
 3. What is the purpose of the functions?
+
+
 4. Are exceptions taken into account in the given measurements?
 5. Is the documentation clear w.r.t. all the possible outcomes?
 ## Refactoring
