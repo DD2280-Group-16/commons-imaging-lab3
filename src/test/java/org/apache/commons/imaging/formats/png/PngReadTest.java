@@ -23,26 +23,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.bytesource.ByteSource;
 import org.apache.commons.imaging.common.GenericImageMetadata;
 import org.apache.commons.imaging.common.ImageMetadata;
-import org.apache.commons.imaging.formats.png.chunks.PngChunk;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.internal.Debug;
 import org.apache.commons.imaging.test.TestResources;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.common.input.BomInput.BytesProcessedNotification;
 
 class PngReadTest extends AbstractPngTest {
 
@@ -103,9 +101,6 @@ class PngReadTest extends AbstractPngTest {
                         .findDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT)
                         .getFieldValue(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION));
 
-        System.out.println("test 2");
-        System.out.println("Coverage Map: " + Arrays.toString(parser.reach));
-
     }
 
     /**
@@ -133,8 +128,6 @@ class PngReadTest extends AbstractPngTest {
 
         assertEquals("\u2192 UTF-8 Test", item.getText());
 
-        System.out.println("test 3");
-        System.out.println("Coverage Map: " + Arrays.toString(parser.reach));
     }
 
     /**
@@ -176,6 +169,74 @@ class PngReadTest extends AbstractPngTest {
         final PngImageParser parser = new PngImageParser();
         assertThrows(ImagingException.class,
                 () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
+        System.out.println(Arrays.toString(parser.reach));
+    }
+
+    /**
+     * Tests that the PngImageParser throws an ImagingException when attempting to parse a PNG
+     * byte array that contains only the PNG signature and the IEND chunk,
+     * i.e., no actual image data or other chunks.
+     */
+    @Test
+    void testChunksIsEmpty() {
+        final PngImageParser parser = new PngImageParser();
+
+        final byte[] bytes = new byte[] {
+                // PNG Signature
+                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+
+                // IEND Chunk
+                0, 0, 0, 0, 
+                'I', 'E', 'N', 'D', 
+                (byte) 0xAE, 0x42, 0x60, (byte) 0x82 
+        };
+
+        final ImagingException ex = assertThrows(ImagingException.class, () -> {
+            parser.getBufferedImage(ByteSource.array(bytes), new PngImagingParameters());
+        });
+
+        assertTrue(ex.getMessage().contains("PNG: no chunks"));
+
+        System.out.println(Arrays.toString(parser.reach));
+    }
+
+    /**
+     * Tests that the PngImageParser throws an ImagingException
+     * when a PNG file contains more than one IHDR (header) chunk.
+     * 
+     * @throws ImagingException
+     */
+    @Test
+    void testNoIhdrHeader() {
+        final PngImageParser parser = new PngImageParser();
+
+        final byte[] bytes = new byte[] {
+                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+
+                0, 0, 0, 13,
+                'I', 'H', 'D', 'R',
+                0, 0, 0, 1,
+                0, 0, 0, 1,
+                0, 0, 0, 2, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 13,
+                'I', 'H', 'D', 'R',
+                0, 0, 0, 1,
+                0, 0, 0, 1,
+                0, 0, 0, 2, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 0,
+                'I', 'E', 'N', 'D',
+                (byte) 0xAE, 0x42, 0x60, (byte) 0x82
+        };
+
+        final ImagingException ex = assertThrows(ImagingException.class, () -> {
+            parser.getBufferedImage(ByteSource.array(bytes), new PngImagingParameters());
+        });
+
+        assertTrue(ex.getMessage().contains("PNG contains more than one Header"));
         System.out.println(Arrays.toString(parser.reach));
     }
 

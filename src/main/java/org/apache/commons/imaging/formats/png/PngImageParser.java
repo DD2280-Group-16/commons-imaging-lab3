@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package org.apache.commons.imaging.formats.png;
+
 import java.awt.Dimension;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
@@ -169,7 +170,6 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
     {
         Arrays.fill(reach, false);
     }
-
 
     @Override
     public BufferedImage getBufferedImage(final ByteSource byteSource, final PngImagingParameters params)
@@ -757,25 +757,16 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
         final List<PngChunk> result = new ArrayList<>();
 
         while (true) {
-
             final int length = BinaryFunctions.read4Bytes("Length", is, "Not a Valid PNG File", getByteOrder());
             if (length < 0) {
-                reach[0] = true;
-                //System.out.println(Arrays.toString(reach));
                 throw new ImagingException("Invalid PNG chunk length: " + length);
-            } else {
-                reach[1] = true;
             }
             final int chunkType = BinaryFunctions.read4Bytes("ChunkType", is, "Not a Valid PNG File", getByteOrder());
 
             if (LOGGER.isLoggable(Level.FINEST)) {
-                reach[2] = true;
                 BinaryFunctions.logCharQuad("ChunkType", chunkType);
                 debugNumber("Length", length, 4);
-            } else {
-                reach[3] = true;
             }
-
             final boolean keep = keepChunk(chunkType, chunkTypes);
 
             byte[] bytes = null;
@@ -783,18 +774,11 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
                 bytes = BinaryFunctions.readBytes("Chunk Data", is, length,
                         "Not a Valid PNG File: Couldn't read Chunk Data.");
             } else {
-                reach[5] = true;
                 BinaryFunctions.skipBytes(is, length, "Not a Valid PNG File");
             }
 
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                if (bytes != null) {
-                    reach[6] = true;
-
-                }
+            if (LOGGER.isLoggable(Level.FINEST) && bytes != null) {
                 debugNumber("bytes", bytes.length, 4);
-            } else {
-                reach[7] = true;
             }
 
             final int crc = BinaryFunctions.read4Bytes("CRC", is, "Not a Valid PNG File", getByteOrder());
@@ -803,24 +787,18 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
                 result.add(ChunkType.makeChunk(length, chunkType, crc, bytes));
 
                 if (returnAfterFirst) {
-                    reach[8] = true;
-                    //System.out.println(Arrays.toString(reach));
                     return result;
-                } else {
-                    reach[9] = true;
                 }
             }
 
             if (chunkType == ChunkType.IEND.value) {
-                reach[10] = true;
-                //System.out.println(Arrays.toString(reach));
-                //System.out.println(Arrays.toString(reach));
                 break;
-            } else {
-                reach[11] = true;
             }
+
         }
+
         return result;
+
     }
 
     /**
