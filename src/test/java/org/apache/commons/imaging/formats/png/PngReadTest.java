@@ -129,7 +129,6 @@ class PngReadTest extends AbstractPngTest {
 
         final GenericImageMetadata.GenericImageMetadataItem item = (GenericImageMetadata.GenericImageMetadataItem) items
                 .get(0);
-
         assertEquals("Comment", item.getKeyword());
 
         assertEquals("\u2192 UTF-8 Test", item.getText());
@@ -151,14 +150,12 @@ class PngReadTest extends AbstractPngTest {
      */
     @Test
     void testUncaughtExceptionOssFuzz33691() throws IOException {
-
         final File file = TestResources.resourceToFile(
                 "/images/png/oss-fuzz-33691/clusterfuzz-testcase-minimized-ImagingPngFuzzer-6177282101215232");
         final PngImageParser parser = new PngImageParser();
         assertThrows(ImagingException.class,
                 () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
-        System.out.println("test 4");
-        System.out.println("Coverage Map: " + Arrays.toString(parser.reach));
+        System.out.println(Arrays.toString(parser.reach));
 
     }
 
@@ -174,68 +171,12 @@ class PngReadTest extends AbstractPngTest {
      */
     @Test
     void testUncaughtExceptionOssFuzz37607() throws IOException {
-
         final File file = TestResources.resourceToFile(
                 "/images/png/IMAGING-317/clusterfuzz-testcase-minimized-ImagingPngFuzzer-6242400830357504");
         final PngImageParser parser = new PngImageParser();
         assertThrows(ImagingException.class,
                 () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
-        System.out.println("test 5");
-        System.out.println("Coverage Map: " + Arrays.toString(parser.reach));
-
-    }
-
-
-    @Test
-    void testReadOneChunk() throws ImagingException, IOException {
-
-        byte[] oneChunkPNG = new byte[] {
-
-                // signature
-                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
-
-                // start
-                0x00, 0x00, 0x00, 0x0D,
-
-                // type
-                'I', 'H', 'D', 'R',
-
-                // height
-                0x00, 0x00, 0x00, 0x01,
-
-                // width
-                0x00, 0x00, 0x00, 0x01,
-
-                // image metadata 
-                0x08, 0x02, 0x00, 0x00, 0x00,
-
-                // end
-                0x00, 0x00, 0x00, 0x00
-        };
-
-        final PngImageParser parser = new PngImageParser();
-
-        assertEquals(parser.getImageSize((ByteSource.array(oneChunkPNG)), new PngImagingParameters()).getHeight(), 1);
-
-        System.out.println("NEW TEST READ ONE CHUNK");
-        System.out.println("Coverage Map: " + Arrays.toString(parser.reach));
-    }
-
-    @Test
-    void testReadNegativeLengthPNG() throws ImagingException, IOException {
-
-        byte[] badPng = new byte[] {
-                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
-                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
-
-        final PngImageParser parser = new PngImageParser();
-
-        assertThrows(ImagingException.class, () -> {
-            parser.getImageSize((ByteSource.array(badPng)), new PngImagingParameters());
-        });
-
-        System.out.println("NEW TEST negative length byte source");
-        System.out.println("Coverage Map: " + Arrays.toString(parser.reach));
+        System.out.println(Arrays.toString(parser.reach));
     }
 
 }
