@@ -16,7 +16,7 @@
 - limitations under the License.
   \*/
 
-# Group assesment for ESSENCE
+# Group assessment for ESSENCE
 
 ## Checklist
 
@@ -78,4 +78,4 @@
 
 ### The Group's Current State
 
-We are still in the Performing State given that we still have to do significant ammount of backtracking and reworking with each new assignment that introduces new challenges and learning opportunities. The biggest obstacle in this assignment was understanding how to present the different steps in the assignment in a way that would not conflict with each other. We have made most improvements when it comes to collobaration and communication as these are the main skills we have continuously practised on each assignment. To reach the next state, we would have to have "more time on the horse", but given that each assignment is almost a new horse in some ways, there is a significant adjustment period.
+We are still in the Performing State, as we continue to do significant backtracking and rework with each new assignment that introduces new challenges and learning opportunities. The biggest obstacle in this assignment was understanding how to present the different steps in a way that would not conflict with one another. We have made most of our improvements in collaboration and communication, as these are the main skills we have consistently practised on each assignment. To reach the next state, we would have to have "more time on the horse", but given that each assignment is almost a new horse in some ways, there is a significant adjustment period.
