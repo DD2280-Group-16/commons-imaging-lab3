@@ -46,7 +46,8 @@ We all made our own implementations of a coverage tool but they all are very sim
     - link: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/ben/diy-tool/src/main/java/org/apache/commons/imaging/formats/tiff/TiffImageMetadata.java
     - The "tool" is a simple array that keeps track of every reached branch so it supports all constructs and is very accurate since every branch check has been implemented manually.
 - Ali
-    - link
+    - link: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/ali/task-1-diy-branch-coverage/src/main/java/org/apache/commons/imaging/formats/tiff/TiffField.java
+    - The "tool" is a simple array that keeps track of every reached branch so it supports all constructs and is very accurate since every branch check has been implemented manually.
 - Oskar
     - link: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/oskar/diy-branch-cover/src/main/java/org/apache/commons/imaging/formats/bmp/CoverageTracker.java
     - The tool injects tracking markers tracking true or false depending on if a branch has been reached. Since it only tracks true or false it works on all constructs and is very accurate.
@@ -65,9 +66,9 @@ We all made our own implementations of a coverage tool but they all are very sim
     - Limitations: Since all coverage has been implemented manually, if there are any changes to the code or any more branches added, those have to be manually covered.
     - Results: The tool are more sensitive than the existing tool resulting in a lower coverage procent.
 - Ali
-    - Detailed:
-    - Limitations:
-    - Results:
+    - Detailed: One branch id (0–28) per outcome in getValueDescription(Object): null, Number, String, Date, each array type, truncation (i > 50, i > 0), and the Unknown type case.
+    - Limitations: Only this method is instrumented, no line coverage.
+    - Results: The results are not the same as JaCoCo because JaCoCo measures the whole project and counts branches differently, my tool only counts these 29 branches. Both show an improvement after adding tests.
 - Oskar
     - Detailed: Very detailed, counts every possible branch and returns the coverage procentage.
     - Limitations: Since all coverage has been implemented manually, if there are any changes to the code or any more branches added, those have to be manually covered.
@@ -85,17 +86,21 @@ We all made our own implementations of a coverage tool but they all are very sim
     - Old coverage: 66% with JoCoCO and 0% with DIY tool
     - New coverage: 70% with JaCoCo and 14% with DIY tool.
     - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/elin/implement-tests/src/test/java/org/apache/commons/imaging/formats/png/PngReadTest.java
+    - Added 2 tests
 - Ben
-    - Comments: "not returning null",  "returning null for invalid longitude/latitude gps fields"
+    - Comments: "not returning null", "returning null for invalid longitude/latitude gps fields"
     - Old coverage: 7% with JoCoCo and 6.66% with DIY tool.
     - New coverage: 78% with JoCoCo and 80% with DIY tool.
     - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/ben/create-tests-for-function-getGpsInfo/src/test/java/org/apache/commons/imaging/formats/jpeg/exif/GpsTest.java
     - Added 4 tests
 - Ali
-    - Comments:
-    - Old coverage:
-    - New coverage:
-    - Test cases added:
+    - Comments: "Branch coverage for getValueDescription(Object): null (id 0), double[] truncation (16–18), float[] truncation (25–27), unknown type (28)."
+    - Old coverage: "Cover procent of regular tool and DIY tool before implementation of tests,
+    JaCoCo: 69% | DIY tool: 58.62068965517241%"
+    - New coverage: cover procent of regular tool and DIY tool after implementation of tests,
+    JaCoCo: 84% | DIY tool: 79.3103448275862%
+    - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/ali/task-2-implement-tests/src/test/java/org/apache/commons/imaging/formats/tiff/TiffFieldGetValueDescriptionTest.java
+    - Added 4 tests
 - Oskar
     - Comments: "The parser must reject BMP files that specify an unknown or unsupported compression method", "The parser must reject BMP files with a header size smaller than the standard 40 bytes", "The parser must reject BMP files where the image data offset is smaller than the expected header and palette size", "The parser must reject BMP files where the calculated extra bytes padding exceeds the total file size".
     - Old coverage: 70% using JaCoCo and 35.42% using DIY tool.
