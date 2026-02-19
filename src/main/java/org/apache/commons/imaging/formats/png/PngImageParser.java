@@ -29,7 +29,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.InflaterInputStream;
@@ -165,11 +167,13 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
 
     // private static final int tRNS = CharsToQuad('t', 'R', 'N', 's');
 
-    final ArrayList<Integer> reached = new ArrayList<>();
+
+    DiyTool h = new DiyTool();
 
     @Override
     public BufferedImage getBufferedImage(final ByteSource byteSource, final PngImagingParameters params)
             throws ImagingException, IOException {
+        DiyTool.addHit(0);
 
         final List<PngChunk> chunks = readChunks(byteSource,
                 new ChunkType[] { ChunkType.IHDR, ChunkType.PLTE, ChunkType.IDAT, ChunkType.tRNS, ChunkType.iCCP,
@@ -178,14 +182,14 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
 
         if (chunks.isEmpty()) {
 
-            reached.add(1);
+            DiyTool.addHit(1);
             throw new ImagingException("PNG: no chunks");
         }
 
         final List<PngChunk> IHDRs = filterChunks(chunks, ChunkType.IHDR);
         if (IHDRs.size() != 1) {
 
-            reached.add(2);
+            DiyTool.addHit(2);
             throw new ImagingException("PNG contains more than one Header");
         }
 
@@ -194,28 +198,28 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
         final List<PngChunk> PLTEs = filterChunks(chunks, ChunkType.PLTE);
         if (PLTEs.size() > 1) {
 
-            reached.add(3);
+            DiyTool.addHit(3);
             throw new ImagingException("PNG contains more than one Palette");
         }
 
         PngChunkPlte pngChunkPLTE = null;
         if (PLTEs.size() == 1) {
 
-            reached.add(4);
+            DiyTool.addHit(4);
             pngChunkPLTE = (PngChunkPlte) PLTEs.get(0);
         }
 
         final List<PngChunk> IDATs = filterChunks(chunks, ChunkType.IDAT);
         if (IDATs.isEmpty()) {
 
-            reached.add(5);
+            DiyTool.addHit(5);
             throw new ImagingException("PNG missing image data");
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (final PngChunk IDAT : IDATs) {
 
-            reached.add(6);
+            DiyTool.addHit(6);
             final PngChunkIdat pngChunkIDAT = (PngChunkIdat) IDAT;
             final byte[] bytes = pngChunkIDAT.getBytes();
             // System.out.println(i + ": bytes: " + bytes.length);
@@ -231,7 +235,7 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
         final List<PngChunk> tRNSs = filterChunks(chunks, ChunkType.tRNS);
         if (!tRNSs.isEmpty()) {
 
-            reached.add(7);
+            DiyTool.addHit(7);
             final PngChunk pngChunktRNS = tRNSs.get(0);
             abstractTransparencyFilter = getTransparencyFilter(pngChunkIHDR.getPngColorType(), pngChunktRNS);
         }
@@ -244,35 +248,35 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
             final List<PngChunk> iCCPs = filterChunks(chunks, ChunkType.iCCP);
             if (sRGBs.size() > 1) {
 
-                reached.add(8);
+                DiyTool.addHit(8);
                 throw new ImagingException("PNG: unexpected sRGB chunk");
             }
             if (gAMAs.size() > 1) {
 
-                reached.add(9);
+                DiyTool.addHit(9);
                 throw new ImagingException("PNG: unexpected gAMA chunk");
             }
             if (iCCPs.size() > 1) {
 
-                reached.add(10);
+                DiyTool.addHit(10);
                 throw new ImagingException("PNG: unexpected iCCP chunk");
             }
 
             if (sRGBs.size() == 1) {
 
-                reached.add(11);
+                DiyTool.addHit(11);
                 // no color management necessary.
                 if (LOGGER.isLoggable(Level.FINEST)) {
 
-                    reached.add(12);
+                    DiyTool.addHit(12);
                     LOGGER.finest("sRGB, no color management necessary.");
                 }
             } else if (iCCPs.size() == 1) {
 
-                reached.add(13);
+                DiyTool.addHit(13);
                 if (LOGGER.isLoggable(Level.FINEST)) {
 
-                    reached.add(14);
+                    DiyTool.addHit(14);
                     LOGGER.finest("iCCP.");
                 }
 
@@ -281,16 +285,16 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
 
                 try {
 
-                    reached.add(15);
+                    DiyTool.addHit(15);
                     iccProfile = ICC_Profile.getInstance(bytes);
                 } catch (final IllegalArgumentException iae) {
 
-                    reached.add(16);
+                    DiyTool.addHit(16);
                     throw new ImagingException("The image data does not correspond to a valid ICC Profile", iae);
                 }
             } else if (gAMAs.size() == 1) {
 
-                reached.add(17);
+                DiyTool.addHit(17);
                 final PngChunkGama pngChunkgAMA = (PngChunkGama) gAMAs.get(0);
                 final double gamma = pngChunkgAMA.getGamma();
 
@@ -300,13 +304,13 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
                 final double diff = Math.abs(targetGamma - gamma);
                 if (diff >= 0.5) {
 
-                    reached.add(18);
+                    DiyTool.addHit(18);
                     gammaCorrection = new GammaCorrection(gamma, targetGamma);
                 }
 
                 if (gammaCorrection != null && pngChunkPLTE != null) {
 
-                    reached.add(19);
+                    DiyTool.addHit(19);
                     pngChunkPLTE.correct(gammaCorrection);
                 }
 
@@ -321,7 +325,7 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
 
             if (pngChunkIHDR.getFilterMethod() != 0) {
 
-                reached.add(20);
+                DiyTool.addHit(20);
                 throw new ImagingException("PNG: unknown FilterMethod: " + pngChunkIHDR.getFilterMethod());
             }
 
@@ -332,11 +336,11 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
             BufferedImage result;
             if (pngColorType.isGreyscale()) {
 
-                reached.add(21);
+                DiyTool.addHit(21);
                 result = getBufferedImageFactory(params).getGrayscaleBufferedImage(width, height, hasAlpha);
             } else {
 
-                reached.add(22);
+                DiyTool.addHit(22);
                 result = getBufferedImageFactory(params).getColorBufferedImage(width, height, hasAlpha);
             }
 
@@ -348,21 +352,21 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
             switch (pngChunkIHDR.getInterlaceMethod()) {
                 case NONE:
 
-                    reached.add(23);
+                    DiyTool.addHit(23);
                     abstractScanExpediter = new ScanExpediterSimple(width, height, iis, result, pngColorType, bitDepth,
                             bitsPerPixel, pngChunkPLTE, gammaCorrection,
                             abstractTransparencyFilter);
                     break;
                 case ADAM7:
 
-                    reached.add(24);
+                    DiyTool.addHit(24);
                     abstractScanExpediter = new ScanExpediterInterlaced(width, height, iis, result, pngColorType,
                             bitDepth, bitsPerPixel, pngChunkPLTE,
                             gammaCorrection, abstractTransparencyFilter);
                     break;
                 default:
 
-                    reached.add(25);
+                    DiyTool.addHit(25);
                     throw new ImagingException("Unknown InterlaceMethod: " + pngChunkIHDR.getInterlaceMethod());
             }
 
@@ -370,11 +374,11 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
 
             if (iccProfile != null) {
 
-                reached.add(26);
+                DiyTool.addHit(26);
                 final boolean isSrgb = new IccProfileParser().isSrgb(iccProfile);
                 if (!isSrgb) {
 
-                    reached.add(27);
+                    DiyTool.addHit(27);
                     final ICC_ColorSpace cs = new ICC_ColorSpace(iccProfile);
 
                     final ColorModel srgbCM = ColorModel.getRGBdefault();
@@ -383,10 +387,6 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
                     result = new ColorTools().convertBetweenColorSpaces(result, cs, csSrgb);
                 }
             }
-
-            System.out.println(reached.size() / 28.0);
-            System.out.println(reached.toString());
-
             return result;
         }
     }

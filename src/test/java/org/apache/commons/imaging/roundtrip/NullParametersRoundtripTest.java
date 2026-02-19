@@ -25,10 +25,20 @@ import java.io.ByteArrayOutputStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.formats.png.DiyTool;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class NullParametersRoundtripTest extends RoundtripBase {
+    @AfterAll
+    public static void printFinalReport() {
+        final int count = 28; 
+        final int hits = DiyTool.getLength(count);
+
+        System.err.println("Total Reached: " + hits + " / " + count);
+        System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
+    }
 
     public static Stream<FormatInfo> data() {
         return Stream.of(FormatInfo.READ_WRITE_FORMATS);

@@ -29,13 +29,24 @@ import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.ImagingTestConstants;
 import org.apache.commons.imaging.internal.Debug;
 import org.apache.commons.io.FilenameUtils;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 class PngMultipleRoundtripTest extends AbstractPngTest {
 
+    @AfterAll
+    public static void printFinalReport() {
+        final int count = 28; 
+        final int hits = DiyTool.getLength(count);
+
+        System.err.println("Total Reached: " + hits + " / " + count);
+        System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
+    }
+
     @Test
     void test() throws Exception {
-        final String imagesFolderPath = FilenameUtils.separatorsToSystem(ImagingTestConstants.TEST_DATA_SOURCE_FOLDER + "/images/png/3");
+        final String imagesFolderPath = FilenameUtils
+                .separatorsToSystem(ImagingTestConstants.TEST_DATA_SOURCE_FOLDER + "/images/png/3");
         final File imagesFolder = new File(imagesFolderPath);
         assertTrue(imagesFolder.exists() && imagesFolder.isDirectory());
 

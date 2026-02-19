@@ -26,7 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.Imaging;
@@ -39,9 +41,19 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.internal.Debug;
 import org.apache.commons.imaging.test.TestResources;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 class PngReadTest extends AbstractPngTest {
+
+    @AfterAll
+    public static void printFinalReport() {
+        final int count = 28; 
+        final int hits = DiyTool.getLength(count);
+
+        System.err.println("Total Reached: " + hits + " / " + count);
+        System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
+    }
 
     @Test
     void test() throws Exception {
@@ -161,4 +173,5 @@ class PngReadTest extends AbstractPngTest {
         assertThrows(ImagingException.class,
                 () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
     }
+
 }
