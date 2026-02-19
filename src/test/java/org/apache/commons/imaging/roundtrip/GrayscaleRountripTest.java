@@ -20,11 +20,22 @@ package org.apache.commons.imaging.roundtrip;
 import java.awt.image.BufferedImage;
 import java.util.stream.Stream;
 
+import org.apache.commons.imaging.formats.png.DiyTool;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class GrayscaleRountripTest extends RoundtripBase {
+
+    @AfterAll
+    public static void printFinalReport() {
+        final int count = 28;
+        final int hits = DiyTool.getLength();
+
+        System.err.println("Total Reached: " + hits + " / " + count);
+        System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
+    }
 
     public static BufferedImage[] images = { TestImages.createArgbBitmapImage(1, 1), // minimal
             TestImages.createArgbGrayscaleImage(2, 2), //

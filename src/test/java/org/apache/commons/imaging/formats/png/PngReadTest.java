@@ -39,9 +39,19 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.internal.Debug;
 import org.apache.commons.imaging.test.TestResources;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 class PngReadTest extends AbstractPngTest {
+
+    @AfterAll
+    public static void printFinalReport() {
+        final int count = 28;
+        final int hits = DiyTool.getLength();
+
+        System.err.println("Total Reached: " + hits + " / " + count);
+        System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
+    }
 
     @Test
     void test() throws Exception {
@@ -56,7 +66,8 @@ class PngReadTest extends AbstractPngTest {
 
                 assertThrows(Exception.class, () -> Imaging.getImageInfo(imageFile), "Image read should have failed.");
 
-                assertThrows(Exception.class, () -> Imaging.getBufferedImage(imageFile), "Image read should have failed.");
+                assertThrows(Exception.class, () -> Imaging.getBufferedImage(imageFile),
+                        "Image read should have failed.");
             } else {
                 final ImageMetadata metadata = Imaging.getMetadata(imageFile);
                 assertFalse(metadata instanceof File); // Dummy check to avoid unused warning (it may be null)
@@ -75,11 +86,12 @@ class PngReadTest extends AbstractPngTest {
     /**
      * Test reading EXIF from the 'eXIf' chunk in PNG file.
      *
-     * @throws IOException if it fails to read the test image
+     * @throws IOException      if it fails to read the test image
      * @throws ImagingException if it fails to read the test image
      */
     @Test
     void testReadExif() throws IOException, ImagingException {
+
         final String input = "/images/png/IMAGING-340/image-with-exif.png";
         final String file = PngReadTest.class.getResource(input).getFile();
         final PngImageParser parser = new PngImageParser();
@@ -97,31 +109,39 @@ class PngReadTest extends AbstractPngTest {
                 metadata.getExif()
                         .findDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT)
                         .getFieldValue(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION));
+
     }
 
     /**
      * Test reading metadata from PNG file with UTF-8 characters in the text chunks.
      *
-     * @see <a href="https://issues.apache.org/jira/browse/IMAGING-342">IMAGING-342</a>
+     * @see <a href=
+     *      "https://issues.apache.org/jira/browse/IMAGING-342">IMAGING-342</a>
      * @throws IOException      if it fails to read the test image
      * @throws ImagingException if it fails to read the test image
      */
     @Test
     void testReadMetadataFromItxtChunk() throws IOException, ImagingException {
+
         final File file = TestResources.resourceToFile("/images/png/IMAGING-342/utf8-comment.png");
         final PngImageParser parser = new PngImageParser();
 
         final ImageMetadata metadata = parser.getMetadata(file);
         final List<?> items = metadata.getItems();
+
         assertEquals(1, items.size());
 
-        final GenericImageMetadata.GenericImageMetadataItem item = (GenericImageMetadata.GenericImageMetadataItem) items.get(0);
+        final GenericImageMetadata.GenericImageMetadataItem item = (GenericImageMetadata.GenericImageMetadataItem) items
+                .get(0);
         assertEquals("Comment", item.getKeyword());
+
         assertEquals("\u2192 UTF-8 Test", item.getText());
+
     }
 
     /**
-     * If the PNG image data contains an invalid ICC Profile, previous versions would simply rethrow the IAE. This test verifies we are instead raising the
+     * If the PNG image data contains an invalid ICC Profile, previous versions
+     * would simply rethrow the IAE. This test verifies we are instead raising the
      * documented {@literal ImageReadException}.
      *
      * <p>
@@ -132,13 +152,16 @@ class PngReadTest extends AbstractPngTest {
      */
     @Test
     void testUncaughtExceptionOssFuzz33691() throws IOException {
-        final File file = TestResources.resourceToFile("/images/png/oss-fuzz-33691/clusterfuzz-testcase-minimized-ImagingPngFuzzer-6177282101215232");
+        final File file = TestResources.resourceToFile(
+                "/images/png/oss-fuzz-33691/clusterfuzz-testcase-minimized-ImagingPngFuzzer-6177282101215232");
         final PngImageParser parser = new PngImageParser();
-        assertThrows(ImagingException.class, () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
+        assertThrows(ImagingException.class,
+                () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
     }
 
     /**
-     * Test that a PNG image using indexed color type but no PLTE chunks does not throw a {@code NullPointerException}.
+     * Test that a PNG image using indexed color type but no PLTE chunks does not
+     * throw a {@code NullPointerException}.
      *
      * <p>
      * See Google OSS Fuzz issue 37607
@@ -148,8 +171,155 @@ class PngReadTest extends AbstractPngTest {
      */
     @Test
     void testUncaughtExceptionOssFuzz37607() throws IOException {
-        final File file = TestResources.resourceToFile("/images/png/IMAGING-317/clusterfuzz-testcase-minimized-ImagingPngFuzzer-6242400830357504");
+        final File file = TestResources.resourceToFile(
+                "/images/png/IMAGING-317/clusterfuzz-testcase-minimized-ImagingPngFuzzer-6242400830357504");
         final PngImageParser parser = new PngImageParser();
-        assertThrows(ImagingException.class, () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
+        assertThrows(ImagingException.class,
+                () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
     }
+
+    /**
+     * Tests that the PngImageParser throws an ImagingException when attempting to
+     * parse a PNG
+     * byte array that contains only the PNG signature and the IEND chunk,
+     * i.e., no actual image data or other chunks.
+     */
+    @Test
+    void testChunksIsEmpty() {
+        final PngImageParser parser = new PngImageParser();
+
+        final byte[] bytes = new byte[] {
+                // PNG Signature
+                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+
+                // IEND Chunk
+                0, 0, 0, 0,
+                'I', 'E', 'N', 'D',
+                (byte) 0xAE, 0x42, 0x60, (byte) 0x82
+        };
+        final ImagingException ex = assertThrows(ImagingException.class, () -> {
+            parser.getBufferedImage(ByteSource.array(bytes), new PngImagingParameters());
+        });
+
+        assertTrue(ex.getMessage().contains("PNG: no chunks"));
+
+    }
+
+    /**
+     * Tests that the PngImageParser throws an ImagingException
+     * when a PNG file contains more than one IHDR (header) chunk.
+     *
+     * @throws ImagingException
+     */
+    @Test
+    void testNoIhdrHeader() {
+        final PngImageParser parser = new PngImageParser();
+
+        final byte[] bytes = new byte[] {
+                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+
+                0, 0, 0, 13,
+                'I', 'H', 'D', 'R',
+                0, 0, 0, 1,
+                0, 0, 0, 1,
+                0, 0, 0, 2, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 13,
+                'I', 'H', 'D', 'R',
+                0, 0, 0, 1,
+                0, 0, 0, 1,
+                0, 0, 0, 2, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 0,
+                'I', 'E', 'N', 'D',
+                (byte) 0xAE, 0x42, 0x60, (byte) 0x82
+        };
+
+        final ImagingException ex = assertThrows(ImagingException.class, () -> {
+            parser.getBufferedImage(ByteSource.array(bytes), new PngImagingParameters());
+        });
+
+        assertTrue(ex.getMessage().contains("PNG contains more than one Header"));
+    }
+
+    /**
+     * Tests that the PngImageParser throws an ImagingException
+     * when a PNG file doesn't contain any data, just a header and an end.
+     *
+     * @throws ImagingException
+     */
+    @Test
+    void testMissingPNGData() {
+        final PngImageParser parser = new PngImageParser();
+
+        final byte[] bytes = new byte[] {
+                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+
+                0, 0, 0, 13,
+                'I', 'H', 'D', 'R',
+                0, 0, 0, 1,
+                0, 0, 0, 1,
+                0, 0, 0, 2, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 0,
+                'I', 'E', 'N', 'D',
+                (byte) 0xAE, 0x42, 0x60, (byte) 0x82
+        };
+
+        final ImagingException ex = assertThrows(ImagingException.class, () -> {
+            parser.getBufferedImage(ByteSource.array(bytes), new PngImagingParameters());
+        });
+
+        assertTrue(ex.getMessage().contains("PNG missing image data"));
+    }
+
+    /**
+     * Tests that the PngImageParser throws an ImagingException
+     * when a PNG file has multiple PLTE Headers.
+     *
+     * @throws ImagingException
+     */
+    @Test
+    void testMultiplePLTEHeader() {
+        final PngImageParser parser = new PngImageParser();
+
+        final byte[] bytes = new byte[] {
+                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+
+                0, 0, 0, 13,
+                'I', 'H', 'D', 'R',
+                0, 0, 0, 1,
+                0, 0, 0, 1,
+                0, 0, 0, 2, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 12,
+                'P', 'L', 'T', 'E',
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 12,
+                'P', 'L', 'T', 'E',
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 0,
+                'I', 'E', 'N', 'D',
+                (byte) 0xAE, 0x42, 0x60, (byte) 0x82
+        };
+
+        final ImagingException ex = assertThrows(ImagingException.class, () -> {
+            parser.getBufferedImage(ByteSource.array(bytes), new PngImagingParameters());
+        });
+
+        assertTrue(ex.getMessage().contains("PNG contains more than one Palette"));
+    }
+
 }
