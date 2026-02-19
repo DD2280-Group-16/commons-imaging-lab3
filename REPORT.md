@@ -78,7 +78,7 @@ We all made our own implementations of a coverage tool but they all are very sim
 - Markus
     - Comments: "TODO(cmchen): add ability to sniff ICOs if possible", "TODO(cmchen): add ability to sniff TGAs if possible", "catching exception coverage", "branch id 0 coverage".
     - Old coverage: 76.8% with OpenClover and 54.4% with DIY tool.
-    - New coverage: 82.3% OpenClover and 61.9% DIY tool
+    - New coverage: 82.3% OpenClover and 60.3% DIY tool
     - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/refactor-code-branch-markus/src/test/java/org/apache/commons/imaging/ImagingGuessFormatTest.java
     - Added 4 tests
 - Elin
@@ -96,9 +96,9 @@ We all made our own implementations of a coverage tool but they all are very sim
 - Ali
     - Comments: "Branch coverage for getValueDescription(Object): null (id 0), double[] truncation (16–18), float[] truncation (25–27), unknown type (28)."
     - Old coverage: "Cover procent of regular tool and DIY tool before implementation of tests,
-    JaCoCo: 69% | DIY tool: 58.62068965517241%"
+    JaCoCo: 69% | DIY tool:  59.45%"
     - New coverage: cover procent of regular tool and DIY tool after implementation of tests,
-    JaCoCo: 84% | DIY tool: 79.3103448275862%
+    JaCoCo: 84% | DIY tool:  75.67%
     - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/ali/task-2-implement-tests/src/test/java/org/apache/commons/imaging/formats/tiff/TiffFieldGetValueDescriptionTest.java
     - Added 4 tests
 - Oskar
