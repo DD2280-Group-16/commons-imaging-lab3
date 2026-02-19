@@ -187,9 +187,6 @@ See ESSENCE.md.
 
 This assignment was defined by not having that much time as compared to other assignments. This, unfortunelty, made the assignment a little less enjoyable but we still feel like we got great insight into a big open source project. We learned how complex a big project can be. 
 
-What are your main take-aways from this project? What did you learn?
-Is there something special you want to mention here?
-
 ## Statement of Contributions
 
 Oskar
@@ -216,5 +213,6 @@ Markus
 
 - `guessFormat` from `Imaging.java`
 - Up to P+
+
 
 
