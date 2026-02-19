@@ -244,6 +244,12 @@ class PngReadTest extends AbstractPngTest {
         assertTrue(ex.getMessage().contains("PNG contains more than one Header"));
     }
 
+    /**
+     * Tests that the PngImageParser throws an ImagingException
+     * when a PNG file doesn't contain any data, just a header and an end.
+     *
+     * @throws ImagingException
+     */
     @Test
     void testMissingPNGData() {
         final PngImageParser parser = new PngImageParser();
@@ -270,8 +276,14 @@ class PngReadTest extends AbstractPngTest {
         assertTrue(ex.getMessage().contains("PNG missing image data"));
     }
 
+    /**
+     * Tests that the PngImageParser throws an ImagingException
+     * when a PNG file has multiple PLTE Headers.
+     *
+     * @throws ImagingException
+     */
     @Test
-    void testNoPLTEHeader() {
+    void testMultiplePLTEHeader() {
         final PngImageParser parser = new PngImageParser();
 
         final byte[] bytes = new byte[] {
