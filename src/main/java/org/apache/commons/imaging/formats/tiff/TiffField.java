@@ -64,6 +64,35 @@ public class TiffField {
 
     private static final Logger LOGGER = Logger.getLogger(TiffField.class.getName());
 
+    /** Number of branches in getValueDescription(Object) for DIY coverage (Task 1). One ID per branch outcome (null, Number, String, ...). */
+    private static final int NUM_BRANCHES_GET_VALUE_DESCRIPTION = 74;
+    /** Branch coverage flags for getValueDescription(Object). Written by tests; dump at end. */
+    public static final boolean[] coverageGetValueDescription = new boolean[NUM_BRANCHES_GET_VALUE_DESCRIPTION];
+
+    /**
+     * Resets branch coverage for getValueDescription (call before a test run).
+     */
+    public static void resetCoverageGetValueDescription() {
+        Arrays.fill(coverageGetValueDescription, false);
+    }
+
+    /**
+     * Writes which branches were taken to the given writer (call at end of test run).
+     *
+     * @param out where to print (e.g. System.out or a file).
+     */
+    public static void dumpCoverageGetValueDescription(final PrintWriter out) {
+        int taken = 0;
+        for (int i = 0; i < coverageGetValueDescription.length; i++) {
+            if (coverageGetValueDescription[i]) {
+                taken++;
+                out.println("  Branch " + i + ": taken");
+            }
+        }
+        out.println("TiffField.getValueDescription coverage: " + taken + "/" + NUM_BRANCHES_GET_VALUE_DESCRIPTION
+                + " (" + (100.0 * taken / NUM_BRANCHES_GET_VALUE_DESCRIPTION) + "%)");
+    }
+
     private final TagInfo tagInfo;
     private final int tag;
     private final int directoryType;
@@ -529,197 +558,474 @@ public class TiffField {
     }
 
     private String getValueDescription(final Object o) {
+        /*
+            Branch id: 0
+            Branch id: 1
+        */
         if (o == null) {
+            coverageGetValueDescription[0] = true;
             return null;
+        } else {
+            coverageGetValueDescription[1] = true;
         }
 
+        /*
+            Branch id: 2
+            Branch id: 3
+        */
         if (o instanceof Number) {
+            coverageGetValueDescription[2] = true;
             return o.toString();
+        } else {
+            coverageGetValueDescription[3] = true;
         }
+
+        /*
+            Branch id: 4
+            Branch id: 5
+        */
         if (o instanceof String) {
+            coverageGetValueDescription[4] = true;
             return "'" + o.toString().trim() + "'";
+        } else {
+            coverageGetValueDescription[5] = true;
         }
+
+        /*
+            Branch id: 6
+            Branch id: 7
+        */
         if (o instanceof Date) {
+            coverageGetValueDescription[6] = true;
             final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.ROOT);
             return df.format((Date) o);
+        } else {
+            coverageGetValueDescription[7] = true;
         }
+
+        /*
+            Branch id: 8
+            Branch id: 9
+        */
         if (o instanceof Object[]) {
+            coverageGetValueDescription[8] = true;
             final Object[] objects = (Object[]) o;
             final StringBuilder result = new StringBuilder();
+
+            /*
+                Branch id: 10
+                Branch id: 11
+            */
+            if (objects.length > 0) {
+                coverageGetValueDescription[10] = true;
+            } else {
+                coverageGetValueDescription[11] = true;
+            }
 
             for (int i = 0; i < objects.length; i++) {
                 final Object object = objects[i];
 
+                /*
+                    Branch id: 12
+                    Branch id: 13
+                */
                 if (i > 50) {
+                    coverageGetValueDescription[12] = true;
                     result.append("... (").append(objects.length).append(")");
                     break;
+                } else {
+                    coverageGetValueDescription[13] = true;
                 }
+
+                /*
+                    Branch id: 14
+                    Branch id: 15
+                */
                 if (i > 0) {
+                    coverageGetValueDescription[14] = true;
                     result.append(", ");
+                } else {
+                    coverageGetValueDescription[15] = true;
                 }
+
                 result.append(object.toString());
             }
             return result.toString();
-            // } else if (o instanceof Number[])
-            // {
-            // Number[] numbers = (Number[]) o;
-            // StringBuilder result = new StringBuilder();
-            //
-            // for (int i = 0; i < numbers.length; i++)
-            // {
-            // Number number = numbers[i];
-            //
-            // if (i > 0)
-            // result.append(", ");
-            // result.append("" + number);
-            // }
-            // return result.toString();
-            // }
+        } else {
+            coverageGetValueDescription[9] = true;
         }
+
+        /*
+            Branch id: 16
+            Branch id: 17
+        */
         if (o instanceof short[]) {
+            coverageGetValueDescription[16] = true;
             final short[] values = (short[]) o;
             final StringBuilder result = new StringBuilder();
+
+            /*
+                Branch id: 18
+                Branch id: 19
+            */
+            if (values.length > 0) {
+                coverageGetValueDescription[18] = true;
+            } else {
+                coverageGetValueDescription[19] = true;
+            }
 
             for (int i = 0; i < values.length; i++) {
                 final short sVal = values[i];
 
+                /*
+                    Branch id: 20
+                    Branch id: 21
+                */
                 if (i > 50) {
+                    coverageGetValueDescription[20] = true;
                     result.append("... (").append(values.length).append(")");
                     break;
+                } else {
+                    coverageGetValueDescription[21] = true;
                 }
+
+                /*
+                    Branch id: 22
+                    Branch id: 23
+                */
                 if (i > 0) {
+                    coverageGetValueDescription[22] = true;
                     result.append(", ");
+                } else {
+                    coverageGetValueDescription[23] = true;
                 }
+
                 result.append(sVal);
             }
             return result.toString();
+        } else {
+            coverageGetValueDescription[17] = true;
         }
+
+        /*
+            Branch id: 24
+            Branch id: 25
+        */
         if (o instanceof int[]) {
+            coverageGetValueDescription[24] = true;
             final int[] values = (int[]) o;
             final StringBuilder result = new StringBuilder();
+
+            /*
+                Branch id: 26
+                Branch id: 27
+            */
+            if (values.length > 0) {
+                coverageGetValueDescription[26] = true;
+            } else {
+                coverageGetValueDescription[27] = true;
+            }
 
             for (int i = 0; i < values.length; i++) {
                 final int iVal = values[i];
 
+                /*
+                    Branch id: 28
+                    Branch id: 29
+                */
                 if (i > 50) {
+                    coverageGetValueDescription[28] = true;
                     result.append("... (").append(values.length).append(")");
                     break;
+                } else {
+                    coverageGetValueDescription[29] = true;
                 }
+
+                /*
+                    Branch id: 30
+                    Branch id: 31
+                */
                 if (i > 0) {
+                    coverageGetValueDescription[30] = true;
                     result.append(", ");
+                } else {
+                    coverageGetValueDescription[31] = true;
                 }
+
                 result.append(iVal);
             }
             return result.toString();
+        } else {
+            coverageGetValueDescription[25] = true;
         }
+
+        /*
+            Branch id: 32
+            Branch id: 33
+        */
         if (o instanceof long[]) {
+            coverageGetValueDescription[32] = true;
             final long[] values = (long[]) o;
             final StringBuilder result = new StringBuilder();
+
+            /*
+                Branch id: 34
+                Branch id: 35
+            */
+            if (values.length > 0) {
+                coverageGetValueDescription[34] = true;
+            } else {
+                coverageGetValueDescription[35] = true;
+            }
 
             for (int i = 0; i < values.length; i++) {
                 final long lVal = values[i];
 
+                /*
+                    Branch id: 36
+                    Branch id: 37
+                */
                 if (i > 50) {
+                    coverageGetValueDescription[36] = true;
                     result.append("... (").append(values.length).append(")");
                     break;
+                } else {
+                    coverageGetValueDescription[37] = true;
                 }
+
+                /*
+                    Branch id: 38
+                    Branch id: 39
+                */
                 if (i > 0) {
+                    coverageGetValueDescription[38] = true;
                     result.append(", ");
+                } else {
+                    coverageGetValueDescription[39] = true;
                 }
+
                 result.append(lVal);
             }
             return result.toString();
+        } else {
+            coverageGetValueDescription[33] = true;
         }
+
+        /*
+            Branch id: 40
+            Branch id: 41
+        */
         if (o instanceof double[]) {
+            coverageGetValueDescription[40] = true;
             final double[] values = (double[]) o;
             final StringBuilder result = new StringBuilder();
+
+            /*
+                Branch id: 42
+                Branch id: 43
+            */
+            if (values.length > 0) {
+                coverageGetValueDescription[42] = true;
+            } else {
+                coverageGetValueDescription[43] = true;
+            }
 
             for (int i = 0; i < values.length; i++) {
                 final double dVal = values[i];
 
+                /*
+                    Branch id: 44
+                    Branch id: 45
+                */
                 if (i > 50) {
+                    coverageGetValueDescription[44] = true;
                     result.append("... (").append(values.length).append(")");
                     break;
+                } else {
+                    coverageGetValueDescription[45] = true;
                 }
+
+                /*
+                    Branch id: 46
+                    Branch id: 47
+                */
                 if (i > 0) {
+                    coverageGetValueDescription[46] = true;
                     result.append(", ");
+                } else {
+                    coverageGetValueDescription[47] = true;
                 }
+
                 result.append(dVal);
             }
             return result.toString();
+        } else {
+            coverageGetValueDescription[41] = true;
         }
+
+        /*
+            Branch id: 48
+            Branch id: 49
+        */
         if (o instanceof byte[]) {
+            coverageGetValueDescription[48] = true;
             final byte[] values = (byte[]) o;
             final StringBuilder result = new StringBuilder();
+
+            /*
+                Branch id: 50
+                Branch id: 51
+            */
+            if (values.length > 0) {
+                coverageGetValueDescription[50] = true;
+            } else {
+                coverageGetValueDescription[51] = true;
+            }
 
             for (int i = 0; i < values.length; i++) {
                 final byte bVal = values[i];
 
+                /*
+                    Branch id: 52
+                    Branch id: 53
+                */
                 if (i > 50) {
+                    coverageGetValueDescription[52] = true;
                     result.append("... (").append(values.length).append(")");
                     break;
+                } else {
+                    coverageGetValueDescription[53] = true;
                 }
+
+                /*
+                    Branch id: 54
+                    Branch id: 55
+                */
                 if (i > 0) {
+                    coverageGetValueDescription[54] = true;
                     result.append(", ");
+                } else {
+                    coverageGetValueDescription[55] = true;
                 }
+
                 result.append(bVal);
             }
             return result.toString();
+        } else {
+            coverageGetValueDescription[49] = true;
         }
+
+        /*
+            Branch id: 56
+            Branch id: 57
+        */
         if (o instanceof char[]) {
+            coverageGetValueDescription[56] = true;
             final char[] values = (char[]) o;
             final StringBuilder result = new StringBuilder();
+
+            /*
+                Branch id: 58
+                Branch id: 59
+            */
+            if (values.length > 0) {
+                coverageGetValueDescription[58] = true;
+            } else {
+                coverageGetValueDescription[59] = true;
+            }
 
             for (int i = 0; i < values.length; i++) {
                 final char cVal = values[i];
 
+                /*
+                    Branch id: 60
+                    Branch id: 61
+                */
                 if (i > 50) {
+                    coverageGetValueDescription[60] = true;
                     result.append("... (").append(values.length).append(")");
                     break;
+                } else {
+                    coverageGetValueDescription[61] = true;
                 }
+
+                /*
+                    Branch id: 62
+                    Branch id: 63
+                */
                 if (i > 0) {
+                    coverageGetValueDescription[62] = true;
                     result.append(", ");
+                } else {
+                    coverageGetValueDescription[63] = true;
                 }
+
                 result.append(cVal);
             }
             return result.toString();
+        } else {
+            coverageGetValueDescription[57] = true;
         }
+
+        /*
+            Branch id: 64
+            Branch id: 65
+        */
         if (o instanceof float[]) {
+            coverageGetValueDescription[64] = true;
             final float[] values = (float[]) o;
             final StringBuilder result = new StringBuilder();
+
+            /*
+                Branch id: 66
+                Branch id: 67
+            */
+            if (values.length > 0) {
+                coverageGetValueDescription[66] = true;
+            } else {
+                coverageGetValueDescription[67] = true;
+            }
 
             for (int i = 0; i < values.length; i++) {
                 final float fVal = values[i];
 
+                /*
+                    Branch id: 68
+                    Branch id: 69
+                */
                 if (i > 50) {
+                    coverageGetValueDescription[68] = true;
                     result.append("... (").append(values.length).append(")");
                     break;
+                } else {
+                    coverageGetValueDescription[69] = true;
                 }
+
+                /*
+                    Branch id: 70
+                    Branch id: 71
+                */
                 if (i > 0) {
+                    coverageGetValueDescription[70] = true;
                     result.append(", ");
+                } else {
+                    coverageGetValueDescription[71] = true;
                 }
+
                 result.append(fVal);
             }
             return result.toString();
+        } else {
+            coverageGetValueDescription[65] = true;
         }
-        // else if (o instanceof short[])
-        // {
-        // short[] numbers = (short[]) o;
-        // StringBuilder result = new StringBuilder();
-        //
-        // for (int i = 0; i < numbers.length; i++)
-        // {
-        // short number = numbers[i];
-        //
-        // if (i > 0)
-        // result.append(", ");
-        // result.append("" + number);
-        // }
-        // return result.toString();
-        // }
 
+        /*
+            Branch id: 72
+        */
+        coverageGetValueDescription[72] = true;
         return "Unknown: " + o.getClass().getName();
     }
+
 
     /**
      * Indicates whether the field's value is inlined into the offset field.
