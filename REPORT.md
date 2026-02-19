@@ -29,11 +29,9 @@ One or two sentences describing it
 
 ## Onboarding experience
 
-Did it build and run as documented?
-See the assignment for details; if everything works out of the box,
-there is no need to write much here. If the first project(s) you picked
-ended up being unsuitable, you can describe the "onboarding experience"
-for each project, along with reason(s) why you changed to a different one.
+We initially opted for Karate as our project, but we switched to Apache Commons Imaging because the codebase is larger and already has many tests, which made it easier for us to work on complexity, coverage, and refactoring tasks.
+
+Building the project was straightforward. We did not have to install many extra tools: with the Maven wrapper we only had to use the provided Maven (or adjust the version if needed), and that tooling is well documented. All other components were installed automatically by the build script, and the build finished without errors. Examples and tests run successfully on our systems. We plan to continue with this project.
 
 ## Complexity
 

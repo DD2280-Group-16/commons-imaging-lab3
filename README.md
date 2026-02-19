@@ -78,12 +78,6 @@ The required Java version is found in the `pom.xml` as the `maven.compiler.sourc
 
 From a command shell, run `mvn` without arguments to invoke the default Maven goal to run all tests and checks.
 
-## Onboarding experience
-
-We initially opted for Karate as our project, but we switched to Apache Commons Imaging because the codebase is larger and already has many tests, which made it easier for us to work on complexity, coverage, and refactoring tasks.
-
-Building the project was straightforward. We did not have to install many extra tools: with the Maven wrapper we only had to use the provided Maven (or adjust the version if needed), and that tooling is well documented. All other components were installed automatically by the build script, and the build finished without errors. Examples and tests run successfully on our systems. We plan to continue with this project.
-
 ## Contributing
 
 We accept Pull Requests via GitHub. The [developer mailing list](https://commons.apache.org/mail-lists.html) is the main channel of communication for contributors.
