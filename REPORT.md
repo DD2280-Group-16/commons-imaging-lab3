@@ -50,9 +50,24 @@ for each project, along with reason(s) why you changed to a different one.
 ## Refactoring
 
 Plan for refactoring complex code:
-Estimated impact of refactoring (lower CC, but other drawbacks?).
-Carried out refactoring (optional, P+):
-git diff ...
+
+- Markus
+The high complexity are necessary to an extent since the function checks magic numbers to determine the file format of the input.
+The function could be divided into smaller functions so that the different "magic number" checks separately. Like first f1 would read the header of the input. F2 would then check the first 2 bytes, and f3 would check the more complex formats like JBIG2. This way the function would work the same way but would be more readable and less complex.
+
+- Elin
+A lot of the CC comes from if-statements that does sanitization checks. This is needed because the function is prone to user errors, such as wrong images. 
+To refactor, I would move the sanity checks to a different function, which are called first, and then, after the PNG has been confirmed to be not corrupt, it would continue to read the rest of the chunks.  
+
+- Ben
+The high complexity is somewhat needed since the function base the returns on what certain values in the fields are. After some small refactoring with moving out if-statements, the CCN is lower, but it is just if statements and other checks moved into separate functions. This however, makes understanding the flow of the function much more efficient and easier to read which in turn kind of makes the complexity of the function smaller.
+
+- Ali
+The complexity comes from many instance checks and repeated logic for each array type. This is due to the strong typing and primitive types of Java where we have the same algorithm multiple times but the only thing that changes is the type of number we use.
+To fix this we can simplify by grouping cases: one path for Number (return toString()), one for “array of numbers” (short[], int[], long[], double[], byte[], float[], and char[]), and one for Object[]. For all array types the algorithm is the same, so a single helper that takes “how to format the element at index i” is enough. We keep separate handling only for null, String, Date, and unknown type.
+
+- Oskar
+The original method had a Cyclomatic Complexity (CCN) of 32 because it violated the Single Responsibility Principle. It is responsible for palette length calculations, raw byte reading, offset validation, and resolving the correct pixel parser via multiple switch and if statements. To fix this, we can apply the Extract Method refactoring pattern by decomposing the monolithic function into private helper methods.
 
 ## Coverage
 
