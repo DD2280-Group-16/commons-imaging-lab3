@@ -54,8 +54,8 @@ class ByteSourceImageTest extends AbstractByteSourceTest {
 
     @AfterAll
     public static void printFinalReport() {
-        final int count = 28; 
-        final int hits = DiyTool.getLength(count);
+        final int count = 28;
+        final int hits = DiyTool.getLength();
 
         System.err.println("Total Reached: " + hits + " / " + count);
         System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);

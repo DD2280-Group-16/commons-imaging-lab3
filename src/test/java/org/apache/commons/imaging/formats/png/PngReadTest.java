@@ -26,9 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.Imaging;
@@ -48,8 +46,8 @@ class PngReadTest extends AbstractPngTest {
 
     @AfterAll
     public static void printFinalReport() {
-        final int count = 28; 
-        final int hits = DiyTool.getLength(count);
+        final int count = 28;
+        final int hits = DiyTool.getLength();
 
         System.err.println("Total Reached: " + hits + " / " + count);
         System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
@@ -194,24 +192,22 @@ class PngReadTest extends AbstractPngTest {
                 (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
 
                 // IEND Chunk
-                0, 0, 0, 0, 
-                'I', 'E', 'N', 'D', 
-                (byte) 0xAE, 0x42, 0x60, (byte) 0x82 
-        };
-
+                0, 0, 0, 0,
+                'I', 'E', 'N', 'D',
+                (byte) 0xAE, 0x42, 0x60, (byte) 0x82
+            };
         final ImagingException ex = assertThrows(ImagingException.class, () -> {
             parser.getBufferedImage(ByteSource.array(bytes), new PngImagingParameters());
         });
 
         assertTrue(ex.getMessage().contains("PNG: no chunks"));
 
-        System.out.println(Arrays.toString(parser.reach));
     }
 
     /**
      * Tests that the PngImageParser throws an ImagingException
      * when a PNG file contains more than one IHDR (header) chunk.
-     * 
+     *
      * @throws ImagingException
      */
     @Test
@@ -245,7 +241,6 @@ class PngReadTest extends AbstractPngTest {
         });
 
         assertTrue(ex.getMessage().contains("PNG contains more than one Header"));
-        System.out.println(Arrays.toString(parser.reach));
     }
 
 }

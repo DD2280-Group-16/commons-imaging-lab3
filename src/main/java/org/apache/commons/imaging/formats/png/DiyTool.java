@@ -20,15 +20,34 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * DiyTool tracks branch coverage during execution.
+ */
 public class DiyTool {
-
     private static final Set<Integer> reached = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    /**
+     * Public constructor.
+     */
+    public DiyTool() {
+        // empty
+    }
+
+    /**
+     * Register that branch has been hit
+     *
+     * @param branchId of branch
+     */
     public static void addHit(int branchId) {
         reached.add(branchId);
     }
 
-    public static int getLength(int total) {
+    /**
+     * Return hits
+     *
+     * @return length of branch list
+     */
+    public static int getLength() {
         return reached.size();
     }
 }
