@@ -20,11 +20,15 @@ package org.apache.commons.imaging;
 import java.io.File;
 import java.util.Arrays;
 import java.util.stream.Stream;
+
+import org.apache.commons.imaging.bytesource.ByteSource;
+import org.apache.commons.io.FilenameUtils;
+import org.junit.jupiter.api.AfterAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterAll;
-import org.apache.commons.io.FilenameUtils;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -38,7 +42,7 @@ class ImagingGuessFormatTest extends AbstractImagingTest {
     /*
         Added "ico\\1\\favicon.ico";
     */
-    //public static final String ICO_IMAGE_FILE = "ico\\1\\favicon.ico";
+    public static final String ICO_IMAGE_FILE = "ico\\1\\favicon.ico";
     public static final String TIFF_IMAGE_FILE = "tiff\\1\\Oregon Scientific DS6639 - DSC_0307 - small.tif";
     public static final String JPEG_IMAGE_FILE = "jpg\\1\\Oregon Scientific DS6639 - DSC_0307 - small.jpg";
     public static final String PSD_IMAGE_FILE = "psd\\1\\Oregon Scientific DS6639 - DSC_0307 - small.psd";
@@ -48,7 +52,7 @@ class ImagingGuessFormatTest extends AbstractImagingTest {
     /*
         Added "tga\\1\\earth.tga";
     */
-    //public static final String TGA_IMAGE_FILE = "tga\\1\\earth.tga";
+    public static final String TGA_IMAGE_FILE = "tga\\1\\earth.tga";
     /*
         Added "pnm\\1\\sample.pnm";
     */
@@ -59,13 +63,13 @@ class ImagingGuessFormatTest extends AbstractImagingTest {
         return Arrays.asList(new Object[] { ImageFormats.PNG, PNG_IMAGE_FILE }, new Object[] { ImageFormats.GIF, GIF_IMAGE_FILE },
                 new Object[] { ImageFormats.ICNS, ICNS_IMAGE_FILE },
                 // TODO(cmchen): add ability to sniff ICOs if possible. Done
-                //new Object[] { ImageFormats.ICO, ICO_IMAGE_FILE },
+                new Object[] { ImageFormats.ICO, ICO_IMAGE_FILE },
                 new Object[] { ImageFormats.TIFF, TIFF_IMAGE_FILE }, new Object[] { ImageFormats.JPEG, JPEG_IMAGE_FILE },
                 new Object[] { ImageFormats.BMP, BMP_IMAGE_FILE }, new Object[] { ImageFormats.PSD, PSD_IMAGE_FILE },
                 new Object[] { ImageFormats.PBM, PBM_IMAGE_FILE }, new Object[] { ImageFormats.PGM, PGM_IMAGE_FILE },
                 new Object[] { ImageFormats.PPM, PPM_IMAGE_FILE },
                 // TODO(cmchen): add ability to sniff TGAs if possible. Done
-                //new Object[] { ImageFormats.TGA, TGA_IMAGE_FILE },
+                new Object[] { ImageFormats.TGA, TGA_IMAGE_FILE },
                 // TODO(cmchen): Add test images for these formats. Done
                 //new Object[] { ImageFormats.PNM, PNM_IMAGE_FILE },
                 // new Object[] { ImageFormat.IMAGE_FORMAT_JBIG2, JBIG2_IMAGE_FILE },
@@ -97,52 +101,52 @@ class ImagingGuessFormatTest extends AbstractImagingTest {
 
         assertEquals(expectedFormat, guessedFormat);
     }
-    // /**
-    //  *  Test that controls that guessFormat throws exceptions on empty files.
-    //  * @throws Exception
-    //  */
-    // @Test
-    // void testGuessFormatThrowsExceptionOnEmptyFile() throws Exception {
-    //     File emptyFile = new File(ImagingTestConstants.TEST_IMAGE_FOLDER, "emptyfile.img");
-    //         emptyFile.createNewFile(); 
-    //         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-    //         Imaging.guessFormat(emptyFile);
-    //     });
-    //     assertTrue(exception.getMessage().contains("Couldn't read magic numbers to guess format."));
-    //     if (emptyFile.exists()) {
-    //         emptyFile.delete();
-    //     }
-    // }
+    /**
+     *  Test that controls that guessFormat throws exceptions on empty files.
+     * @throws Exception
+     */
+    @Test
+    void testGuessFormatThrowsExceptionOnEmptyFile() throws Exception {
+        File emptyFile = new File(ImagingTestConstants.TEST_IMAGE_FOLDER, "emptyfile.img");
+            emptyFile.createNewFile(); 
+            Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            Imaging.guessFormat(emptyFile);
+        });
+        assertTrue(exception.getMessage().contains("Couldn't read magic numbers to guess format."));
+        if (emptyFile.exists()) {
+            emptyFile.delete();
+        }
+    }
 
-    // @Test
-    // void testGuessFormatCatchesExceptions() throws Exception {
-    //     ByteSource empty = ByteSource.array(new byte[0]);
+    @Test
+    void testGuessFormatCatchesExceptions() throws Exception {
+        ByteSource empty = ByteSource.array(new byte[0]);
 
-    //     ImageFormat format = Imaging.guessFormat(empty);
+        ImageFormat format = Imaging.guessFormat(empty);
 
-    //     assertEquals(ImageFormats.UNKNOWN, format);
-    //     /*
-    //         Throwing branch
-    //     */
-    //     assertTrue(Imaging.coverage[5]);  
-    //     /*
-    //         Catching branch
-    //     */
-    //     assertTrue(Imaging.coverage[4]);
-    // }
+        assertEquals(ImageFormats.UNKNOWN, format);
+        /*
+            Throwing branch
+        */
+        assertTrue(Imaging.coverage[5]);  
+        /*
+            Catching branch
+        */
+        assertTrue(Imaging.coverage[4]);
+    }
 
 
-    // @Test
-    // void testThatGuessFormatReturnsUnknownOnByteSourceNull() throws Exception {
-    //     // Trigger branch: byteSource == null
-    //     ImageFormat format = Imaging.guessFormat((ByteSource) null);
+    @Test
+    void testThatGuessFormatReturnsUnknownOnByteSourceNull() throws Exception {
+        // Trigger branch: byteSource == null
+        ImageFormat format = Imaging.guessFormat((ByteSource) null);
 
-    //     // Assert that the returning format is UNKNOWN
-    //     assertEquals(ImageFormats.UNKNOWN, format);
+        // Assert that the returning format is UNKNOWN
+        assertEquals(ImageFormats.UNKNOWN, format);
 
-    //     // coverage[0] First branch is set to true
-    //     assertTrue(Imaging.coverage[0]);
-    // }
+        // coverage[0] First branch is set to true
+        assertTrue(Imaging.coverage[0]);
+    }
 
 
     @AfterAll
