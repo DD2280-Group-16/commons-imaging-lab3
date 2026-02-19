@@ -113,30 +113,3 @@ You like Apache Commons Imaging? Then [donate back to the ASF](https://www.apach
 ## Apache Commons Components
 
 Please see the [list of components](https://commons.apache.org/components.html)
-
-## Statement of Contributions
-
-Oskar
-
-- `readImageContents` from `BmpImageParser.java`
-- Up to P+
-
-Elin
-
-- `readChunks` from `PngImageParser.java`
-- Up to P+
-
-Ben
-
-- `getGpsInfo` from `TiffImageMetadata.java`
-- Up to P+
-
-Ali
-
-- `getValueDescription` from `TiffFiel.java`
-- Up to P
-
-Markus
-
-- `guessFormat` from `Imaging.java`
-- Up to P+
