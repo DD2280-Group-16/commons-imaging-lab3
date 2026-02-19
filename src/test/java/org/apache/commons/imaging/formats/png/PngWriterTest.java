@@ -29,6 +29,7 @@ import org.apache.commons.imaging.ImagingTestConstants;
 import org.apache.commons.imaging.palette.Palette;
 import org.apache.commons.imaging.palette.PaletteFactory;
 import org.apache.commons.imaging.palette.SimplePalette;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -36,19 +37,32 @@ import org.junit.jupiter.api.Test;
  */
 class PngWriterTest extends AbstractPngTest {
 
+    @AfterAll
+    public static void printFinalReport() {
+        final int count = 28;
+        final int hits = DiyTool.getLength();
+
+        System.err.println("Total Reached: " + hits + " / " + count);
+        System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
+    }
+
     // The form of the test set is
     // 0. target file name
     // 1. Expected color count (as String) - for testPaletteFactory
-    private static String[][] testSet = { { "1/Oregon Scientific DS6639 - DSC_0307 - small.png", "1" }, { "2/12118.png", "1" }, { "2/28569-4.png", "1" },
-            { "2/28569-8.png", "1" }, { "2/28569.png", "1" }, { "3/testImage.png", "116" }, { "3/testImageNoAlpha.png", "1" },
-            { "4/buttons_level_menu_down.ipad.png", "2" }, { "5/trns-gray.png", "26" }, { "5/trns-palette8.png", "18" }, { "5/trns-rgb.png", "26" }, };
+    private static String[][] testSet = { { "1/Oregon Scientific DS6639 - DSC_0307 - small.png", "1" },
+            { "2/12118.png", "1" }, { "2/28569-4.png", "1" },
+            { "2/28569-8.png", "1" }, { "2/28569.png", "1" }, { "3/testImage.png", "116" },
+            { "3/testImageNoAlpha.png", "1" },
+            { "4/buttons_level_menu_down.ipad.png", "2" }, { "5/trns-gray.png", "26" }, { "5/trns-palette8.png", "18" },
+            { "5/trns-rgb.png", "26" }, };
 
     private static int countColors(final byte[] bytes) throws IOException {
         final BufferedImage imageParsed = Imaging.getBufferedImage(bytes);
         return new PaletteFactory().makeExactRgbPaletteSimple(imageParsed, Integer.MAX_VALUE).length();
     }
 
-    private static byte[] getImageBytes(final BufferedImage image, final PngImagingParameters params, final PaletteFactory paletteFactory) throws IOException {
+    private static byte[] getImageBytes(final BufferedImage image, final PngImagingParameters params,
+            final PaletteFactory paletteFactory) throws IOException {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             new PngWriter().writeImage(image, os, params, paletteFactory);
             return os.toByteArray();

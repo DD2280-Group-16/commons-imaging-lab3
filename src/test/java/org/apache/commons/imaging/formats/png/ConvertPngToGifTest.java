@@ -27,9 +27,18 @@ import java.util.List;
 import org.apache.commons.imaging.ImageFormats;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.internal.Debug;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 class ConvertPngToGifTest extends AbstractPngTest {
+    @AfterAll
+    public static void printFinalReport() {
+        final int count = 28;
+        final int hits = DiyTool.getLength();
+
+        System.err.println("Total Reached: " + hits + " / " + count);
+        System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
+    }
 
     @Test
     void test() throws Exception {
