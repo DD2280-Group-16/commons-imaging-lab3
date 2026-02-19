@@ -154,8 +154,8 @@ We all made our own implementations of a coverage tool but they all are very sim
     - Added 4 tests
 - Elin
     - Comments: "PNG has to have chunks in order to be read", "PNGs are not allowed to have more than one header"
-    - Old coverage: 66% with JoCoCO and 0% with DIY tool
-    - New coverage: 70% with JaCoCo and 14% with DIY tool.
+    - Old coverage: 66% with JoCoCO and 50% with DIY tool
+    - New coverage: 70% with JaCoCo and 57% with DIY tool.
     - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/elin/implement-tests/src/test/java/org/apache/commons/imaging/formats/png/PngReadTest.java
     - Added 2 tests
 - Ben
@@ -213,6 +213,7 @@ Markus
 
 - `guessFormat` from `Imaging.java`
 - Up to P+
+
 
 
 
