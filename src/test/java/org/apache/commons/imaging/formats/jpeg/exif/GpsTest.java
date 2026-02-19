@@ -14,10 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.imaging.formats.jpeg.exif;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.util.stream.Stream;
@@ -29,6 +26,7 @@ import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants;
 import org.apache.commons.imaging.internal.Debug;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -57,6 +55,7 @@ class GpsTest extends AbstractExifTest {
         }
 
         final TiffImageMetadata.GpsInfo gpsInfo = exifMetadata.getGpsInfo();
+        exifMetadata.printGetGpsInfoCoverage(); // Print branch coverage
         if (null == gpsInfo) {
             return;
         }

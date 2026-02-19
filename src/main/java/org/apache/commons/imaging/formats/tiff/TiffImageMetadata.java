@@ -719,6 +719,9 @@ public class TiffImageMetadata extends GenericImageMetadata {
         return tag.getValue(field);
     }
 
+    private boolean[] coverage = new boolean[15]; // Coverage tracker
+
+
     /**
      * Gets GPS information from metadata.
      *
@@ -726,10 +729,13 @@ public class TiffImageMetadata extends GenericImageMetadata {
      * @throws ImagingException if an error occurs.
      */
     public GpsInfo getGpsInfo() throws ImagingException {
+        // System.out.println("FUNCTION IS USED"); // SEEING WHICH FUNCTIONS USE GETGPSINFO FUNCTION
         final TiffDirectory gpsDirectory = findDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_GPS);
         if (null == gpsDirectory) {
+            this.coverage[0] = true;
             return null;
         }
+            this.coverage[1] = true;
 
         // more specific example of how to access GPS values.
         final TiffField latitudeRefField = gpsDirectory.findField(GpsTagConstants.GPS_TAG_GPS_LATITUDE_REF);
@@ -737,18 +743,64 @@ public class TiffImageMetadata extends GenericImageMetadata {
         final TiffField longitudeRefField = gpsDirectory.findField(GpsTagConstants.GPS_TAG_GPS_LONGITUDE_REF);
         final TiffField longitudeField = gpsDirectory.findField(GpsTagConstants.GPS_TAG_GPS_LONGITUDE);
 
-        if (latitudeRefField == null || latitudeField == null || longitudeRefField == null || longitudeField == null) {
+        // if (latitudeRefField == null || latitudeField == null || longitudeRefField == null || longitudeField == null) {
+        //     return null;
+        // }
+
+        if (latitudeRefField == null){
+            this.coverage[2] = true;
             return null;
         }
+        else {
+            this.coverage[3] = true;
+        }
 
+        if (latitudeField == null){
+            this.coverage[4] = true;
+            return null;
+        }
+        else {
+            this.coverage[5] = true;
+        }
+
+        if (longitudeRefField == null){
+            this.coverage[6] = true;
+            return null;
+        }
+        else {
+            this.coverage[7] = true;
+        }
+
+        if (longitudeField == null){
+            this.coverage[8] = true;
+            return null;
+        }
+        else {
+            this.coverage[9] = true;
+        }
+
+        coverage[10] = true;
+        
         // all of these values are strings.
         final String latitudeRef = latitudeRefField.getStringValue();
         final RationalNumber[] latitude = (RationalNumber[]) latitudeField.getValue();
         final String longitudeRef = longitudeRefField.getStringValue();
         final RationalNumber[] longitude = (RationalNumber[]) longitudeField.getValue();
 
-        if (latitude.length != 3 || longitude.length != 3) {
+        if (latitude.length != 3) {
+            this.coverage[11] = true;
             throw new ImagingException("Expected three values for latitude and longitude.");
+        }
+        else {
+            this.coverage[12] = true;
+        }
+
+        if (longitude.length != 3) {
+            this.coverage[13] = true;
+            throw new ImagingException("Expected three values for latitude and longitude.");
+        }
+        else {
+            this.coverage[14] = true;
         }
 
         final RationalNumber latitudeDegrees = latitude[0];
@@ -759,7 +811,19 @@ public class TiffImageMetadata extends GenericImageMetadata {
         final RationalNumber longitudeMinutes = longitude[1];
         final RationalNumber longitudeSeconds = longitude[2];
 
+        // System.out.println("FUNCTION IS USED");
         return new GpsInfo(latitudeRef, longitudeRef, latitudeDegrees, latitudeMinutes, latitudeSeconds, longitudeDegrees, longitudeMinutes, longitudeSeconds);
+    }
+    
+    public void printGetGpsInfoCoverage(){
+
+        System.out.println("Branches reached: ");
+        for (int i = 0; i < this.coverage.length; i++){
+            if (coverage[i] == true){
+                System.out.print(i + " ");
+            }
+        }
+        System.out.print("\n");
     }
 
     @Override
