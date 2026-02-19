@@ -77,7 +77,7 @@ We all made our own implementations of a coverage tool but they all are very sim
 ## Coverage improvement
 - Markus
     - Comments: "TODO(cmchen): add ability to sniff ICOs if possible", "TODO(cmchen): add ability to sniff TGAs if possible", "catching exception coverage", "branch id 0 coverage".
-    - Old coverage: 76.8% with OpenClover and 55.5% with DIY tool.
+    - Old coverage: 76.8% with OpenClover and 54.4% with DIY tool.
     - New coverage: 82.3% OpenClover and 61.9% DIY tool
     - Test cases added: https://github.com/DD2280-Group-16/commons-imaging-lab3/blob/refactor-code-branch-markus/src/test/java/org/apache/commons/imaging/ImagingGuessFormatTest.java
     - Added 4 tests
