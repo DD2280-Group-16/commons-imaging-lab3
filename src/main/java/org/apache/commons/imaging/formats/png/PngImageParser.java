@@ -178,41 +178,41 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
                         ChunkType.gAMA, ChunkType.sRGB, },
                 false);
 
-        if (chunks.isEmpty()) {
+        //if (chunks.isEmpty()) {
 
-            DiyTool.addHit(1);
-            throw new ImagingException("PNG: no chunks");
-        }
+        //    DiyTool.addHit(1);
+        //    throw new ImagingException("PNG: no chunks");
+        //}
 
-        final List<PngChunk> IHDRs = filterChunks(chunks, ChunkType.IHDR);
-        if (IHDRs.size() != 1) {
+        //final List<PngChunk> IHDRs = filterChunks(chunks, ChunkType.IHDR);
+        //if (IHDRs.size() != 1) {
 
-            DiyTool.addHit(2);
-            throw new ImagingException("PNG contains more than one Header");
-        }
+        //    DiyTool.addHit(2);
+        //    throw new ImagingException("PNG contains more than one Header");
+        //}
 
         final PngChunkIhdr pngChunkIHDR = (PngChunkIhdr) IHDRs.get(0);
 
-        final List<PngChunk> PLTEs = filterChunks(chunks, ChunkType.PLTE);
-        if (PLTEs.size() > 1) {
+        //final List<PngChunk> PLTEs = filterChunks(chunks, ChunkType.PLTE);
+        //if (PLTEs.size() > 1) {
 
-            DiyTool.addHit(3);
-            throw new ImagingException("PNG contains more than one Palette");
-        }
+        //    DiyTool.addHit(3);
+        //    throw new ImagingException("PNG contains more than one Palette");
+        //}
 
-        PngChunkPlte pngChunkPLTE = null;
-        if (PLTEs.size() == 1) {
+        //PngChunkPlte pngChunkPLTE = null;
+        //if (PLTEs.size() == 1) {
 
-            DiyTool.addHit(4);
-            pngChunkPLTE = (PngChunkPlte) PLTEs.get(0);
-        }
+        //    DiyTool.addHit(4);
+        //    pngChunkPLTE = (PngChunkPlte) PLTEs.get(0);
+        //}
 
         final List<PngChunk> IDATs = filterChunks(chunks, ChunkType.IDAT);
-        if (IDATs.isEmpty()) {
+        //if (IDATs.isEmpty()) {
 
-            DiyTool.addHit(5);
-            throw new ImagingException("PNG missing image data");
-        }
+        //    DiyTool.addHit(5);
+        //    throw new ImagingException("PNG missing image data");
+        //}
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (final PngChunk IDAT : IDATs) {
@@ -231,12 +231,12 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
         AbstractTransparencyFilter abstractTransparencyFilter = null;
 
         final List<PngChunk> tRNSs = filterChunks(chunks, ChunkType.tRNS);
-        if (!tRNSs.isEmpty()) {
+        //if (!tRNSs.isEmpty()) {
 
-            DiyTool.addHit(7);
-            final PngChunk pngChunktRNS = tRNSs.get(0);
-            abstractTransparencyFilter = getTransparencyFilter(pngChunkIHDR.getPngColorType(), pngChunktRNS);
-        }
+        //    DiyTool.addHit(7);
+        //    final PngChunk pngChunktRNS = tRNSs.get(0);
+        //    abstractTransparencyFilter = getTransparencyFilter(pngChunkIHDR.getPngColorType(), pngChunktRNS);
+        //}
 
         ICC_Profile iccProfile = null;
         GammaCorrection gammaCorrection = null;
@@ -244,39 +244,39 @@ public class PngImageParser extends AbstractImageParser<PngImagingParameters>
             final List<PngChunk> sRGBs = filterChunks(chunks, ChunkType.sRGB);
             final List<PngChunk> gAMAs = filterChunks(chunks, ChunkType.gAMA);
             final List<PngChunk> iCCPs = filterChunks(chunks, ChunkType.iCCP);
-            if (sRGBs.size() > 1) {
+            //if (sRGBs.size() > 1) {
 
-                DiyTool.addHit(8);
-                throw new ImagingException("PNG: unexpected sRGB chunk");
-            }
-            if (gAMAs.size() > 1) {
+            //    DiyTool.addHit(8);
+            //    throw new ImagingException("PNG: unexpected sRGB chunk");
+            //}
+            //if (gAMAs.size() > 1) {
 
-                DiyTool.addHit(9);
-                throw new ImagingException("PNG: unexpected gAMA chunk");
-            }
-            if (iCCPs.size() > 1) {
+            //    DiyTool.addHit(9);
+            //    throw new ImagingException("PNG: unexpected gAMA chunk");
+            //}
+            //if (iCCPs.size() > 1) {
 
-                DiyTool.addHit(10);
-                throw new ImagingException("PNG: unexpected iCCP chunk");
-            }
+            //    DiyTool.addHit(10);
+            //    throw new ImagingException("PNG: unexpected iCCP chunk");
+            //}
 
             if (sRGBs.size() == 1) {
 
                 DiyTool.addHit(11);
                 // no color management necessary.
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                //if (LOGGER.isLoggable(Level.FINEST)) {
 
-                    DiyTool.addHit(12);
-                    LOGGER.finest("sRGB, no color management necessary.");
-                }
+                //    DiyTool.addHit(12);
+                //    LOGGER.finest("sRGB, no color management necessary.");
+                //}
             } else if (iCCPs.size() == 1) {
 
                 DiyTool.addHit(13);
-                if (LOGGER.isLoggable(Level.FINEST)) {
+                //if (LOGGER.isLoggable(Level.FINEST)) {
 
-                    DiyTool.addHit(14);
-                    LOGGER.finest("iCCP.");
-                }
+                //    DiyTool.addHit(14);
+                //    LOGGER.finest("iCCP.");
+                //}
 
                 final PngChunkIccp pngChunkiCCP = (PngChunkIccp) iCCPs.get(0);
                 final byte[] bytes = pngChunkiCCP.getUncompressedProfile();
