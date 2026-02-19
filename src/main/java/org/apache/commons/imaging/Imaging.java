@@ -108,6 +108,8 @@ public final class Imaging {
     private static final int[] MAGIC_NUMBERS_RIFF_1 = { 0x52, 0x49, };
     private static final int[] MAGIC_NUMBERS_RIFF_2 = { 0x46, 0x46, };
     private static final byte[] MAGIC_NUMBERS_WEBP = { 0x57, 0x45, 0x42, 0x50, };
+    private static int NUM_BRANCHES = 68;
+    public static boolean[] coverage = new boolean[NUM_BRANCHES];
 
     private static boolean compareBytePair(final int[] a, final int[] b) {
         if (a.length != 2 && b.length != 2) {
@@ -693,6 +695,8 @@ public final class Imaging {
         return guessFormat(ByteSource.array(bytes));
     }
 
+
+
     /**
      * Attempts to determine the image format of a file based on its "magic numbers," the first bytes of the data.
      *
@@ -701,121 +705,456 @@ public final class Imaging {
      * returns a ImageFormat enumeration indicating what it detects. Note that this method can return "false positives" in cases where non-image files begin
      * with the specified byte values.
      * </p>
-     *
+     *  ---------------------------------------------------------------------
+     *  Before changes:
+     * Total number of Cyclomatic Complexity is 33
+     * Total coverage: 77.1%
+     *  ---------------------------------------------------------------------
+     *  After changes:
+     * Total number of Cyclomatic Complexity is 64
+     * 
+     *  ---------------------------------------------------------------------
+     *  Before adding tests:
+     *  Own tool %: 55.55555555555556
+     *  Total coverage: 76.8%
+     *  ---------------------------------------------------------------------
+     *  After Tests:
+        Own tool %: 61.904761904761905
+        OpenClover: 82.3%
+     *  
      * @param byteSource a valid ByteSource object potentially supplying data for an image.
      * @return An ImageFormat, such as ImageFormat.IMAGE_FORMAT_JPEG. Returns ImageFormat.IMAGE_FORMAT_UNKNOWN if the image type cannot be determined.
      * @throws IllegalArgumentException in the event of an unsuccessful attempt to read the image data
      * @throws IOException              in the event of an unrecoverable I/O condition.
      */
     public static ImageFormat guessFormat(final ByteSource byteSource) throws IOException {
+        /*
+            Branch id: 0
+        */
         if (byteSource == null) {
+            coverage[0] = true;
             return ImageFormats.UNKNOWN;
         }
-
+        /*
+            Branch id: 1
+        */
+        else {
+            coverage[1] = true;
+        }
+        /*
+            Branch id: 2
+        */
         try (InputStream is = byteSource.getInputStream()) {
+            coverage[2] = true;
             final int i1 = is.read();
             final int i2 = is.read();
-            if (i1 < 0 || i2 < 0) {
+            /*
+                Branch id: 4
+            */
+            if (i1 < 0) {
+                coverage[4] = true;
                 throw new IllegalArgumentException("Couldn't read magic numbers to guess format.");
             }
+            /*
+                Branch id: 5
+            */
+            coverage[5] = true;
+            /*
+                Branch id: 6
+            */
+            if (i2 < 0) {
+                coverage[6] = true;
+                throw new IllegalArgumentException("Couldn't read magic numbers to guess format.");
+            }
+            /*
+                Branch id: 7
+            */
+            coverage[7] = true;
 
             final int b1 = i1 & 0xff;
             final int b2 = i2 & 0xff;
             final int[] bytePair = { b1, b2, };
-
+            /*
+                Branch id: 8
+            */
             if (compareBytePair(MAGIC_NUMBERS_GIF, bytePair)) {
+                coverage[8] = true;
                 return ImageFormats.GIF;
                 // } else if (b1 == 0x00 && b2 == 0x00) // too similar to TGA
                 // {
                 // return ImageFormat.IMAGE_FORMAT_ICO;
             }
+            /*
+                Branch id: 9
+            */
+            coverage[9] = true;
+            /*
+                Branch id: 10
+            */
             if (compareBytePair(MAGIC_NUMBERS_PNG, bytePair)) {
+                coverage[10] = true;
                 return ImageFormats.PNG;
             }
+            /*
+                Branch id: 11
+            */
+            coverage[11] = true;
+            /*
+                Branch id: 12
+            */
             if (compareBytePair(MAGIC_NUMBERS_JPEG, bytePair)) {
+                coverage[12] = true;
                 return ImageFormats.JPEG;
             }
+            /*
+                Branch id: 13
+            */
+            coverage[13] = true;
+            /*
+                Branch id: 14
+            */
             if (compareBytePair(MAGIC_NUMBERS_BMP, bytePair)) {
+                coverage[14] = true;
                 return ImageFormats.BMP;
             }
+            /*
+                Branch id: 15
+            */
+                coverage[15] = true;
+            /*
+                Branch id: 16
+            */
             if (compareBytePair(MAGIC_NUMBERS_TIFF_MOTOROLA, bytePair)) {
+                coverage[16] = true;
                 return ImageFormats.TIFF;
             }
+            /*
+                Branch id: 17
+            */
+                coverage[17] = true;
+            /*
+                Branch id: 18
+            */
             if (compareBytePair(MAGIC_NUMBERS_TIFF_INTEL, bytePair)) {
+                coverage[18] = true;
                 return ImageFormats.TIFF;
             }
+            /*
+                Branch id: 19
+            */
+                coverage[19] = true;
+            /*
+                Branch id: 20
+            */
             if (compareBytePair(MAGIC_NUMBERS_PSD, bytePair)) {
+                coverage[20] = true;
                 return ImageFormats.PSD;
             }
+            /*
+                Branch id: 21
+            */
+            coverage[21] = true;
+            /*
+                Branch id: 22
+            */
             if (compareBytePair(MAGIC_NUMBERS_PAM, bytePair)) {
+                coverage[22] = true;
                 return ImageFormats.PAM;
             }
+            /*
+                Branch id: 23
+            */
+            coverage[23] = true;
+            /*
+                Branch id: 24
+            */
             if (compareBytePair(MAGIC_NUMBERS_PBM_A, bytePair)) {
+                coverage[24] = true;
                 return ImageFormats.PBM;
             }
+            /*
+                Branch id: 25
+            */
+            coverage[25] = true;
+            /*
+                Branch id: 26
+            */
             if (compareBytePair(MAGIC_NUMBERS_PBM_B, bytePair)) {
+                coverage[26] = true;
                 return ImageFormats.PBM;
             }
+            /*
+                Branch id: 27
+            */
+            coverage[27] = true;
+            /*
+                Branch id: 28
+            */
             if (compareBytePair(MAGIC_NUMBERS_PGM_A, bytePair)) {
+                coverage[28] = true;
                 return ImageFormats.PGM;
             }
+            /*
+                Branch id: 29
+            */
+            coverage[29] = true;
+            /*
+                Branch id: 30
+            */
             if (compareBytePair(MAGIC_NUMBERS_PGM_B, bytePair)) {
+                coverage[30] = true;
                 return ImageFormats.PGM;
             }
+            /*
+                Branch id: 31
+            */
+            coverage[31] = true;
+            /*
+                Branch id: 32
+            */
             if (compareBytePair(MAGIC_NUMBERS_PPM_A, bytePair)) {
+                coverage[32] = true;
                 return ImageFormats.PPM;
             }
+            /*
+                Branch id: 33
+            */
+            coverage[33] = true;
+            /*
+                Branch id: 34
+            */
             if (compareBytePair(MAGIC_NUMBERS_PPM_B, bytePair)) {
+                coverage[34] = true;
                 return ImageFormats.PPM;
             }
+            /*
+                Branch id: 35
+            */
+            coverage[35] = true;
+            /*
+                Branch id: 36
+            */
             if (compareBytePair(MAGIC_NUMBERS_JBIG2_1, bytePair)) {
+                coverage[36] = true;
                 final int i3 = is.read();
                 final int i4 = is.read();
-                if (i3 < 0 || i4 < 0) {
+                /*
+                    Branch id: 37
+                */
+                if (i3 < 0) {
+                    coverage[37] = true;
                     throw new IllegalArgumentException("Couldn't read magic numbers to guess format.");
                 }
+                /*
+                    Branch id: 38
+                */
+                coverage[38] = true;
+                /*
+                    Branch id: 39
+                */
+                if (i4 < 0) {
+                    coverage[39] = true;
+                    throw new IllegalArgumentException("Couldn't read magic numbers to guess format.");
+                }
+                /*
+                    Branch id: 40
+                */
+                else {
+                    coverage[40] = true;
+                }
+                
 
                 final int b3 = i3 & 0xff;
                 final int b4 = i4 & 0xff;
                 final int[] bytePair2 = { b3, b4, };
+                /*
+                    Branch id: 41
+                */
                 if (compareBytePair(MAGIC_NUMBERS_JBIG2_2, bytePair2)) {
+                    coverage[41] = true;
                     return ImageFormats.JBIG2;
                 }
-            } else if (compareBytePair(MAGIC_NUMBERS_ICNS, bytePair)) {
-                return ImageFormats.ICNS;
-            } else if (compareBytePair(MAGIC_NUMBERS_DCX, bytePair)) {
-                return ImageFormats.DCX;
-            } else if (compareBytePair(MAGIC_NUMBERS_RGBE, bytePair)) {
-                return ImageFormats.RGBE;
-            } else if (compareBytePair(MAGIC_NUMBERS_RIFF_1, bytePair)) {
-                final int i3 = is.read();
-                final int i4 = is.read();
-                if (i3 < 0 || i4 < 0) {
-                    throw new IllegalArgumentException("Couldn't read magic numbers to guess format.");
+                /*
+                    Branch id: 42
+                */
+                else {
+                    coverage[42] = true;
                 }
-
-                final int b3 = i3 & 0xff;
-                final int b4 = i4 & 0xff;
-                final int[] bytePair2 = { b3, b4, };
-                if (compareBytePair(MAGIC_NUMBERS_RIFF_2, bytePair2)) {
-                    final byte[] bytes = new byte[4];
-                    if (is.read(bytes) < 4) { // Skip file size
+            /*
+                Branch id: 43
+            */
+            } else { // 77
+                coverage[43] = true;
+                /*
+                    Branch id: 44
+                */
+                if (compareBytePair(MAGIC_NUMBERS_ICNS, bytePair)) {
+                    coverage[44] = true;
+                    return ImageFormats.ICNS;
+                } 
+                /*
+                    Branch id: 45
+                */
+                else {
+                    coverage[45] = true;
+                }
+                /*
+                    Branch id: 46
+                */
+                if (compareBytePair(MAGIC_NUMBERS_DCX, bytePair)) {
+                    coverage[46] = true;
+                    return ImageFormats.DCX;
+                }
+                /*
+                    Branch id: 47
+                */
+                else {
+                    coverage[47] = true;
+                }
+                /*
+                    Branch id: 48
+                */
+                if (compareBytePair(MAGIC_NUMBERS_RGBE, bytePair)) {
+                    coverage[48] = true;
+                    return ImageFormats.RGBE;
+                }
+                /*
+                    Branch id: 49
+                */
+                else {
+                    coverage[50] = true;
+                }
+                /*
+                    Branch id: 50
+                */
+                if (compareBytePair(MAGIC_NUMBERS_RIFF_1, bytePair)) {
+                    coverage[50] = true;
+                    final int i3 = is.read();
+                    final int i4 = is.read();
+                    /*
+                        Branch id: 51
+                    */
+                    if (i3 < 0) {
+                        coverage[51] = true;
                         throw new IllegalArgumentException("Couldn't read magic numbers to guess format.");
                     }
-
-                    if (is.read(bytes) == 4 && Arrays.equals(MAGIC_NUMBERS_WEBP, bytes)) {
-                        return ImageFormats.WEBP;
+                    /*
+                        Branch id: 52
+                    */
+                    coverage[52] = true;
+                    /*
+                        Branch id: 53
+                    */
+                    if (i4 < 0) {
+                        coverage[53] = true;
+                        throw new IllegalArgumentException("Couldn't read magic numbers to guess format.");
+                    }
+                    /*
+                        Branch id: 54
+                    */
+                    else {
+                        coverage[54] = true;
+                    }
+                    final int b3 = i3 & 0xff;
+                    final int b4 = i4 & 0xff;
+                    final int[] bytePair2 = { b3, b4, };
+                    /*
+                        Branch id: 55
+                    */
+                    if (compareBytePair(MAGIC_NUMBERS_RIFF_2, bytePair2)) {
+                        coverage[55] = true;
+                        final byte[] bytes = new byte[4];
+                        /*
+                            Branch id: 56
+                        */
+                        if (is.read(bytes) < 4) { // Skip file size
+                            coverage[56] = true;
+                            throw new IllegalArgumentException("Couldn't read magic numbers to guess format.");
+                        }
+                        /*
+                            Branch id: 57
+                        */
+                        else {
+                            coverage[57] = true;
+                        }
+                        /*
+                            Branch id: 58
+                        */
+                        if (is.read(bytes) == 4 && Arrays.equals(MAGIC_NUMBERS_WEBP, bytes)) {
+                            coverage[58] = true;
+                            return ImageFormats.WEBP;
+                        }
+                        /*
+                            Branch id: 59
+                        */
+                       else {
+                            coverage[59] = true;
+                       }
+                    }
+                    /*
+                        Branch id: 60
+                    */
+                    else { // 66
+                        coverage[60] = true;
                     }
                 }
-            }
+                /*
+                    Branch id: 61
+                */
+                else { // 88
+                    coverage[61] = true;
+                }
+            }  
+            /*
+                Branch id: 62
+            */
+            coverage[62] = true;
             return Stream.of(ImageFormats.values()).filter(imageFormat -> Stream.of(imageFormat.getExtensions()).anyMatch(extension -> {
                 final String fileName = byteSource.getFileName();
+                /*
+                    Branch id: 63
+                */
                 if (StringUtils.isEmpty(fileName)) {
+                    coverage[63] = true;
                     return false;
                 }
+                /*
+                    Branch id: 64
+                */
+                else {
+                    coverage[64] = true;
+                }
                 final String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
-                return fileExtension.equalsIgnoreCase(extension);
-            })).findFirst().orElse(ImageFormats.UNKNOWN);
+                boolean match = fileExtension.equalsIgnoreCase(extension);
+                /*
+                    Branch id: 65
+                */
+                if(match) {
+                    coverage[65] = true;
+                }
+                /*
+                    Branch id: 66
+                */
+                else {
+                    coverage[66] = true;
+                }
+                return match;
+                // return fileExtension.equalsIgnoreCase(extension);
+            // })).findFirst().orElse(ImageFormats.UNKNOWN);
+            })).findFirst().orElseGet(() -> {
+                /*
+                    Branch id: 67
+                */
+                coverage[67] = true;
+                return ImageFormats.UNKNOWN;
+            });
+        }
+        /*
+            Branch id: 3
+        */
+        catch(Exception e) {
+            coverage[3] = true;
+            return ImageFormats.UNKNOWN;
         }
     }
 
