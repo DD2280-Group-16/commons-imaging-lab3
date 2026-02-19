@@ -179,7 +179,8 @@ class PngReadTest extends AbstractPngTest {
     }
 
     /**
-     * Tests that the PngImageParser throws an ImagingException when attempting to parse a PNG
+     * Tests that the PngImageParser throws an ImagingException when attempting to
+     * parse a PNG
      * byte array that contains only the PNG signature and the IEND chunk,
      * i.e., no actual image data or other chunks.
      */
@@ -195,7 +196,7 @@ class PngReadTest extends AbstractPngTest {
                 0, 0, 0, 0,
                 'I', 'E', 'N', 'D',
                 (byte) 0xAE, 0x42, 0x60, (byte) 0x82
-            };
+        };
         final ImagingException ex = assertThrows(ImagingException.class, () -> {
             parser.getBufferedImage(ByteSource.array(bytes), new PngImagingParameters());
         });
@@ -241,6 +242,72 @@ class PngReadTest extends AbstractPngTest {
         });
 
         assertTrue(ex.getMessage().contains("PNG contains more than one Header"));
+    }
+
+    @Test
+    void testMissingPNGData() {
+        final PngImageParser parser = new PngImageParser();
+
+        final byte[] bytes = new byte[] {
+                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+
+                0, 0, 0, 13,
+                'I', 'H', 'D', 'R',
+                0, 0, 0, 1,
+                0, 0, 0, 1,
+                0, 0, 0, 2, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 0,
+                'I', 'E', 'N', 'D',
+                (byte) 0xAE, 0x42, 0x60, (byte) 0x82
+        };
+
+        final ImagingException ex = assertThrows(ImagingException.class, () -> {
+            parser.getBufferedImage(ByteSource.array(bytes), new PngImagingParameters());
+        });
+
+        assertTrue(ex.getMessage().contains("PNG missing image data"));
+    }
+
+    @Test
+    void testNoPLTEHeader() {
+        final PngImageParser parser = new PngImageParser();
+
+        final byte[] bytes = new byte[] {
+                (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+
+                0, 0, 0, 13,
+                'I', 'H', 'D', 'R',
+                0, 0, 0, 1,
+                0, 0, 0, 1,
+                0, 0, 0, 2, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 12,
+                'P', 'L', 'T', 'E',
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 12,
+                'P', 'L', 'T', 'E',
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+
+                0, 0, 0, 0,
+                'I', 'E', 'N', 'D',
+                (byte) 0xAE, 0x42, 0x60, (byte) 0x82
+        };
+
+        final ImagingException ex = assertThrows(ImagingException.class, () -> {
+            parser.getBufferedImage(ByteSource.array(bytes), new PngImagingParameters());
+        });
+
+        assertTrue(ex.getMessage().contains("PNG contains more than one Palette"));
     }
 
 }
