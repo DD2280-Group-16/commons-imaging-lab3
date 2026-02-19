@@ -23,9 +23,10 @@ has to be delivered in a standard, cross-platform format.
 
 ## Project
 
-Name:
-URL:
-One or two sentences describing it
+Name: Apache Commons Imaging 
+URL: https://github.com/apache/commons-imaging
+
+A pure Java library that reads and writes many image formats and metadata. 
 
 ## Onboarding experience
 
@@ -133,12 +134,12 @@ Number of test cases added: two per team member (P) or at least four (P+).
 
 ## Self-assessment: Way of working
 
-Current state according to the Essence standard: ...
-Was the self-assessment unanimous? Any doubts about certain items?
-How have you improved so far?
-Where is potential for improvement?
+See ESSENCE.md.
 
 ## Overall experience
 
+This assignment was defined by not having that much time as compared to other assignments. This, unfortunelty, made the assignment a little less enjoyable but we still feel like we got great insight into a big open source project. We learned how complex a big project can be. 
+
 What are your main take-aways from this project? What did you learn?
 Is there something special you want to mention here?
+
