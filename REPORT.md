@@ -185,7 +185,7 @@ See ESSENCE.md.
 
 ## Overall experience
 
-This assignment was defined by not having that much time as compared to other assignments. This, unfortunelty, made the assignment a little less enjoyable but we still feel like we got great insight into a big open source project. We learned how complex a big project can be. 
+This assignment was defined by not having as much time as compared to other assignments. Unfortunately, this made the assignment a little less enjoyable, but we still feel we gained valuable insight into a large open-source project. We learned how complex a big project can be. 
 
 ## Statement of Contributions
 
@@ -193,16 +193,20 @@ Oskar
 
 - `readImageContents` from `BmpImageParser.java`
 - Up to P+
+- Link to refactor/p+ branch: https://github.com/DD2280-Group-16/commons-imaging-lab3/pull/18
 
 Elin
 
 - `getBufferedImage` from `PngImageParser.java`
 - Up to P+
+- Link to refactor/p+ branch: https://github.com/DD2280-Group-16/commons-imaging-lab3/pull/32
+- Link to test: https://github.com/DD2280-Group-16/commons-imaging-lab3/pull/30
 
 Ben
 
 - `getGpsInfo` from `TiffImageMetadata.java`
 - Up to P+
+- Link to refactor/p+ branch: https://github.com/DD2280-Group-16/commons-imaging-lab3/pull/31
 
 Ali
 
@@ -213,6 +217,8 @@ Markus
 
 - `guessFormat` from `Imaging.java`
 - Up to P+
+- Link to refactor/p+ branch: https://github.com/DD2280-Group-16/commons-imaging-lab3/tree/markus/refactoring
+
 
 
 
