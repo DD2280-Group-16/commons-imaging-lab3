@@ -20,11 +20,14 @@ package org.apache.commons.imaging;
 import java.io.File;
 import java.util.Arrays;
 import java.util.stream.Stream;
-
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.apache.commons.io.FilenameUtils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
 
 class ImagingGuessFormatTest extends AbstractImagingTest {
 
@@ -68,10 +71,10 @@ class ImagingGuessFormatTest extends AbstractImagingTest {
                 // new Object[] { ImageFormat.IMAGE_FORMAT_JBIG2, JBIG2_IMAGE_FILE },
                 new Object[] { ImageFormats.UNKNOWN, UNKNOWN_IMAGE_FILE }).stream();
     }
-    // @BeforeAll
-    // static void resetCoverage() {
-    //     Arrays.fill(Imaging.coverage, false);
-    // }
+    @BeforeAll
+    static void resetCoverage() {
+        Arrays.fill(Imaging.coverage, false);
+    }
 
     /**
      *  Added ICO coverage
@@ -142,13 +145,13 @@ class ImagingGuessFormatTest extends AbstractImagingTest {
     // }
 
 
-    // @AfterAll
-    // static void getCoveragePercent() {
-    //     int covered = 0;
-    //     for (boolean b : Imaging.coverage) {
-    //         if (b) covered++;
-    //     }
-    //     System.out.println("% Covered: " + (covered * 100.0) / Imaging.coverage.length);
-    // }
+    @AfterAll
+    static void getCoveragePercent() {
+        int covered = 0;
+        for (boolean b : Imaging.coverage) {
+            if (b) covered++;
+        }
+        System.out.println("% Covered: " + (covered * 100.0) / Imaging.coverage.length);
+    }
 
 }
