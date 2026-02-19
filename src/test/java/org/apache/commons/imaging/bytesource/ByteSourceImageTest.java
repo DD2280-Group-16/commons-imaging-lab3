@@ -41,14 +41,25 @@ import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.ImagingParameters;
 import org.apache.commons.imaging.formats.jpeg.JpegImagingParameters;
+import org.apache.commons.imaging.formats.png.DiyTool;
 import org.apache.commons.imaging.formats.tiff.TiffImagingParameters;
 import org.apache.commons.imaging.internal.Debug;
 import org.apache.commons.imaging.internal.ImageParserFactory;
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class ByteSourceImageTest extends AbstractByteSourceTest {
+
+    @AfterAll
+    public static void printFinalReport() {
+        final int count = 28;
+        final int hits = DiyTool.getLength();
+
+        System.err.println("Total Reached: " + hits + " / " + count);
+        System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
+    }
 
     public static Stream<File> data() throws Exception {
         return getTestImages().stream();
@@ -84,7 +95,8 @@ class ByteSourceImageTest extends AbstractByteSourceTest {
     }
 
     public void checkGetImageInfo(final File imageFile, final byte[] imageFileBytes)
-            throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ImagingException {
+            throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+            ImagingException {
         final boolean ignoreImageData = isPhilHarveyTestImage(imageFile);
         final ImageFormat imageFormat = Imaging.guessFormat(imageFile);
         ImagingParameters params = null;
@@ -181,9 +193,12 @@ class ByteSourceImageTest extends AbstractByteSourceTest {
         assertEquals(imageFileBytes.length, imageFile.length());
 
         if (imageFile.getName().toLowerCase().endsWith(".ico") || imageFile.getName().toLowerCase().endsWith(".tga")
-                || imageFile.getName().toLowerCase().endsWith(".jb2") || imageFile.getName().toLowerCase().endsWith(".pcx")
-                || imageFile.getName().toLowerCase().endsWith(".dcx") || imageFile.getName().toLowerCase().endsWith(".psd")
-                || imageFile.getName().toLowerCase().endsWith(".wbmp") || imageFile.getName().toLowerCase().endsWith(".xbm")
+                || imageFile.getName().toLowerCase().endsWith(".jb2")
+                || imageFile.getName().toLowerCase().endsWith(".pcx")
+                || imageFile.getName().toLowerCase().endsWith(".dcx")
+                || imageFile.getName().toLowerCase().endsWith(".psd")
+                || imageFile.getName().toLowerCase().endsWith(".wbmp")
+                || imageFile.getName().toLowerCase().endsWith(".xbm")
                 || imageFile.getName().toLowerCase().endsWith(".xpm")) {
             // these formats can't be parsed without a file name hint.
             // they have ambiguous "magic number" signatures.
@@ -192,7 +207,8 @@ class ByteSourceImageTest extends AbstractByteSourceTest {
 
         checkGuessFormat(imageFile, imageFileBytes);
 
-        if (imageFile.getName().toLowerCase().endsWith(".png") && imageFile.getParentFile().getName().equalsIgnoreCase("pngsuite")
+        if (imageFile.getName().toLowerCase().endsWith(".png")
+                && imageFile.getParentFile().getName().equalsIgnoreCase("pngsuite")
                 && imageFile.getName().toLowerCase().startsWith("x")) {
             return;
         }
@@ -206,7 +222,8 @@ class ByteSourceImageTest extends AbstractByteSourceTest {
         checkGetImageSize(imageFile, imageFileBytes);
 
         final ImageFormat imageFormat = Imaging.guessFormat(imageFile);
-        if (ImageFormats.JPEG != imageFormat && ImageFormats.WEBP != imageFormat && ImageFormats.UNKNOWN != imageFormat) {
+        if (ImageFormats.JPEG != imageFormat && ImageFormats.WEBP != imageFormat
+                && ImageFormats.UNKNOWN != imageFormat) {
             checkGetBufferedImage(imageFile, imageFileBytes);
         }
     }

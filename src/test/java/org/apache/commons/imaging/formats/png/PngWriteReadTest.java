@@ -35,9 +35,19 @@ import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.common.GenericImageMetadata;
 import org.apache.commons.imaging.common.ImageMetadata;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 class PngWriteReadTest extends AbstractImagingTest {
+
+    @AfterAll
+    public static void printFinalReport() {
+        final int count = 28;
+        final int hits = DiyTool.getLength();
+
+        System.err.println("Total Reached: " + hits + " / " + count);
+        System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
+    }
 
     private int[][] bufferedImageToImageData(final BufferedImage image) {
         final int width = image.getWidth();
@@ -58,7 +68,8 @@ class PngWriteReadTest extends AbstractImagingTest {
             for (int x = 0; x < width; x++) {
                 final int alpha = (x + y) % 256;
                 final int value = (x + y) % 256;
-                final int argb = (0xff & alpha) << 24 | (0xff & value) << 16 | (0xff & value) << 8 | (0xff & value) << 0;
+                final int argb = (0xff & alpha) << 24 | (0xff & value) << 16 | (0xff & value) << 8
+                        | (0xff & value) << 0;
 
                 result[y][x] = argb;
             }
@@ -109,7 +120,8 @@ class PngWriteReadTest extends AbstractImagingTest {
         final int[][] smallAscendingPixels = getAscendingRawData(256, 256);
         final int[][] smallRandomPixels = randomRawData(256, 256);
 
-        final int[][][] testData = { smallBlackPixels, singleBlackPixel, smallRedPixels, singleRedPixel, smallAscendingPixels, smallRandomPixels, };
+        final int[][][] testData = { smallBlackPixels, singleBlackPixel, smallRedPixels, singleRedPixel,
+                smallAscendingPixels, smallRandomPixels, };
 
         for (final int[][] rawData : testData) {
             writeAndReadImageData(rawData);
@@ -165,7 +177,8 @@ class PngWriteReadTest extends AbstractImagingTest {
     void testTransparency() throws Exception {
         // Test for https://issues.apache.org/jira/browse/SANSELAN-52
         final int[][] smallAscendingPixels = getAscendingRawData(256, 256);
-        final byte[] pngBytes = Imaging.writeImageToBytes(imageDataToBufferedImage(smallAscendingPixels), ImageFormats.PNG);
+        final byte[] pngBytes = Imaging.writeImageToBytes(imageDataToBufferedImage(smallAscendingPixels),
+                ImageFormats.PNG);
         assertTrue(Imaging.getImageInfo(pngBytes).isTransparent());
     }
 
@@ -211,10 +224,12 @@ class PngWriteReadTest extends AbstractImagingTest {
 
         final ImageMetadata imageMetadata = Imaging.getMetadata(bytes);
         assertEquals(imageMetadata.getItems().size(), 2);
-        final GenericImageMetadata.GenericImageMetadataItem item0 = (GenericImageMetadata.GenericImageMetadataItem) imageMetadata.getItems().get(0);
+        final GenericImageMetadata.GenericImageMetadataItem item0 = (GenericImageMetadata.GenericImageMetadataItem) imageMetadata
+                .getItems().get(0);
         assertEquals(item0.getKeyword(), "a");
         assertEquals(item0.getText(), "b");
-        final GenericImageMetadata.GenericImageMetadataItem item1 = (GenericImageMetadata.GenericImageMetadataItem) imageMetadata.getItems().get(1);
+        final GenericImageMetadata.GenericImageMetadataItem item1 = (GenericImageMetadata.GenericImageMetadataItem) imageMetadata
+                .getItems().get(1);
         assertEquals(item1.getKeyword(), "c");
         assertEquals(item1.getText(), "d");
     }
