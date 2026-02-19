@@ -26,7 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.Imaging;
@@ -39,9 +41,19 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.internal.Debug;
 import org.apache.commons.imaging.test.TestResources;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 class PngReadTest extends AbstractPngTest {
+
+    @AfterAll
+    public static void printFinalReport() {
+        final int count = 28; 
+        final int hits = DiyTool.getLength(count);
+
+        System.err.println("Total Reached: " + hits + " / " + count);
+        System.err.printf("Percentage:    %.2f%%%n", (double) hits / count * 100);
+    }
 
     @Test
     void test() throws Exception {
@@ -56,7 +68,8 @@ class PngReadTest extends AbstractPngTest {
 
                 assertThrows(Exception.class, () -> Imaging.getImageInfo(imageFile), "Image read should have failed.");
 
-                assertThrows(Exception.class, () -> Imaging.getBufferedImage(imageFile), "Image read should have failed.");
+                assertThrows(Exception.class, () -> Imaging.getBufferedImage(imageFile),
+                        "Image read should have failed.");
             } else {
                 final ImageMetadata metadata = Imaging.getMetadata(imageFile);
                 assertFalse(metadata instanceof File); // Dummy check to avoid unused warning (it may be null)
@@ -75,7 +88,7 @@ class PngReadTest extends AbstractPngTest {
     /**
      * Test reading EXIF from the 'eXIf' chunk in PNG file.
      *
-     * @throws IOException if it fails to read the test image
+     * @throws IOException      if it fails to read the test image
      * @throws ImagingException if it fails to read the test image
      */
     @Test
@@ -102,7 +115,8 @@ class PngReadTest extends AbstractPngTest {
     /**
      * Test reading metadata from PNG file with UTF-8 characters in the text chunks.
      *
-     * @see <a href="https://issues.apache.org/jira/browse/IMAGING-342">IMAGING-342</a>
+     * @see <a href=
+     *      "https://issues.apache.org/jira/browse/IMAGING-342">IMAGING-342</a>
      * @throws IOException      if it fails to read the test image
      * @throws ImagingException if it fails to read the test image
      */
@@ -115,13 +129,15 @@ class PngReadTest extends AbstractPngTest {
         final List<?> items = metadata.getItems();
         assertEquals(1, items.size());
 
-        final GenericImageMetadata.GenericImageMetadataItem item = (GenericImageMetadata.GenericImageMetadataItem) items.get(0);
+        final GenericImageMetadata.GenericImageMetadataItem item = (GenericImageMetadata.GenericImageMetadataItem) items
+                .get(0);
         assertEquals("Comment", item.getKeyword());
         assertEquals("\u2192 UTF-8 Test", item.getText());
     }
 
     /**
-     * If the PNG image data contains an invalid ICC Profile, previous versions would simply rethrow the IAE. This test verifies we are instead raising the
+     * If the PNG image data contains an invalid ICC Profile, previous versions
+     * would simply rethrow the IAE. This test verifies we are instead raising the
      * documented {@literal ImageReadException}.
      *
      * <p>
@@ -132,13 +148,16 @@ class PngReadTest extends AbstractPngTest {
      */
     @Test
     void testUncaughtExceptionOssFuzz33691() throws IOException {
-        final File file = TestResources.resourceToFile("/images/png/oss-fuzz-33691/clusterfuzz-testcase-minimized-ImagingPngFuzzer-6177282101215232");
+        final File file = TestResources.resourceToFile(
+                "/images/png/oss-fuzz-33691/clusterfuzz-testcase-minimized-ImagingPngFuzzer-6177282101215232");
         final PngImageParser parser = new PngImageParser();
-        assertThrows(ImagingException.class, () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
+        assertThrows(ImagingException.class,
+                () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
     }
 
     /**
-     * Test that a PNG image using indexed color type but no PLTE chunks does not throw a {@code NullPointerException}.
+     * Test that a PNG image using indexed color type but no PLTE chunks does not
+     * throw a {@code NullPointerException}.
      *
      * <p>
      * See Google OSS Fuzz issue 37607
@@ -148,8 +167,11 @@ class PngReadTest extends AbstractPngTest {
      */
     @Test
     void testUncaughtExceptionOssFuzz37607() throws IOException {
-        final File file = TestResources.resourceToFile("/images/png/IMAGING-317/clusterfuzz-testcase-minimized-ImagingPngFuzzer-6242400830357504");
+        final File file = TestResources.resourceToFile(
+                "/images/png/IMAGING-317/clusterfuzz-testcase-minimized-ImagingPngFuzzer-6242400830357504");
         final PngImageParser parser = new PngImageParser();
-        assertThrows(ImagingException.class, () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
+        assertThrows(ImagingException.class,
+                () -> parser.getBufferedImage(ByteSource.file(file), new PngImagingParameters()));
     }
+
 }
