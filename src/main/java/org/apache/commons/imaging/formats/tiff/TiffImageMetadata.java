@@ -719,6 +719,9 @@ public class TiffImageMetadata extends GenericImageMetadata {
         return tag.getValue(field);
     }
 
+    private boolean[] coverage = new boolean[10]; // Coverage tracker
+
+
     /**
      * Gets GPS information from metadata.
      *
@@ -726,10 +729,13 @@ public class TiffImageMetadata extends GenericImageMetadata {
      * @throws ImagingException if an error occurs.
      */
     public GpsInfo getGpsInfo() throws ImagingException {
+        // System.out.println("FUNCTION IS USED"); // SEEING WHICH FUNCTIONS USE GETGPSINFO FUNCTION
         final TiffDirectory gpsDirectory = findDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_GPS);
         if (null == gpsDirectory) {
+            this.coverage[0] = true;
             return null;
         }
+            this.coverage[1] = true;
 
         // more specific example of how to access GPS values.
         final TiffField latitudeRefField = gpsDirectory.findField(GpsTagConstants.GPS_TAG_GPS_LATITUDE_REF);
@@ -737,19 +743,49 @@ public class TiffImageMetadata extends GenericImageMetadata {
         final TiffField longitudeRefField = gpsDirectory.findField(GpsTagConstants.GPS_TAG_GPS_LONGITUDE_REF);
         final TiffField longitudeField = gpsDirectory.findField(GpsTagConstants.GPS_TAG_GPS_LONGITUDE);
 
-        if (latitudeRefField == null || latitudeField == null || longitudeRefField == null || longitudeField == null) {
+        // if (latitudeRefField == null || latitudeField == null || longitudeRefField == null || longitudeField == null) {
+        //     return null;
+        // }
+
+        // if (latitudeRefField == null){
+        //     this.coverage[2] = true;
+        //     return null;
+        // }
+        // if (latitudeField == null){
+        //     this.coverage[3] = true;
+        //     return null;
+        // }
+        // if (longitudeRefField == null){
+        //     this.coverage[4] = true;
+        //     return null;
+        // }
+        // if (longitudeField == null){
+        //     this.coverage[5] = true;
+        //     return null;
+        // }
+
+        if (!validFieldCheck(latitudeRefField, latitudeField, longitudeRefField, longitudeField)){
             return null;
         }
 
+        coverage[6] = true;
+        
         // all of these values are strings.
         final String latitudeRef = latitudeRefField.getStringValue();
         final RationalNumber[] latitude = (RationalNumber[]) latitudeField.getValue();
         final String longitudeRef = longitudeRefField.getStringValue();
         final RationalNumber[] longitude = (RationalNumber[]) longitudeField.getValue();
 
-        if (latitude.length != 3 || longitude.length != 3) {
+        if (latitude.length != 3) {
+            this.coverage[7] = true;
             throw new ImagingException("Expected three values for latitude and longitude.");
         }
+        if (longitude.length != 3) {
+            this.coverage[8] = true;
+            throw new ImagingException("Expected three values for latitude and longitude.");
+        }
+
+        this.coverage[9] = true;
 
         final RationalNumber latitudeDegrees = latitude[0];
         final RationalNumber latitudeMinutes = latitude[1];
@@ -759,9 +795,39 @@ public class TiffImageMetadata extends GenericImageMetadata {
         final RationalNumber longitudeMinutes = longitude[1];
         final RationalNumber longitudeSeconds = longitude[2];
 
+        // System.out.println("FUNCTION IS USED");
         return new GpsInfo(latitudeRef, longitudeRef, latitudeDegrees, latitudeMinutes, latitudeSeconds, longitudeDegrees, longitudeMinutes, longitudeSeconds);
     }
+    
+    // ============= HELPER FUNCTIONS =================
+    public void printGetGpsInfoCoverage(){
 
+        System.out.println("Branches reached: ");
+        for (int i = 0; i < this.coverage.length; i++){
+            if (coverage[i] == true){
+                System.out.print(i + " ");
+            }
+        }
+        System.out.print("\n");
+    }
+
+    /**
+     * Returns false if GPS fields are null. Used to lower the CCN of the getGpsInfo() function.
+     * @param latitudeRefField
+     * @param latitudeField
+     * @param longitudeRefField
+     * @param longitudeField
+     * @return
+     */
+    public static boolean validFieldCheck(TiffField latitudeRefField, TiffField latitudeField, TiffField longitudeRefField, TiffField longitudeField){
+        if (latitudeRefField == null || latitudeField == null || longitudeRefField == null || longitudeField == null) {
+            return false;
+        }
+        return true;
+    }
+
+
+    // ================================================
     @Override
     public List<? extends ImageMetadataItem> getItems() {
         final List<ImageMetadataItem> result = new ArrayList<>();
