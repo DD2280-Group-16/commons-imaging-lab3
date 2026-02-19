@@ -17,10 +17,6 @@
 
 # Report for assignment 3
 
-This is a template for your report. You are free to modify it as needed.
-It is not required to use markdown for your report either, but the report
-has to be delivered in a standard, cross-platform format.
-
 ## Project
 
 Name: Apache Commons Imaging 
@@ -142,4 +138,32 @@ This assignment was defined by not having that much time as compared to other as
 
 What are your main take-aways from this project? What did you learn?
 Is there something special you want to mention here?
+
+## Statement of Contributions
+
+Oskar
+
+- `readImageContents` from `BmpImageParser.java`
+- Up to P+
+
+Elin
+
+- `getBufferedImage` from `PngImageParser.java`
+- Up to P+
+
+Ben
+
+- `getGpsInfo` from `TiffImageMetadata.java`
+- Up to P+
+
+Ali
+
+- `getValueDescription` from `TiffFiel.java`
+- Up to P
+
+Markus
+
+- `guessFormat` from `Imaging.java`
+- Up to P+
+
 
